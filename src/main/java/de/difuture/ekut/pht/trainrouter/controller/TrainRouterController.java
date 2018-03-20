@@ -1,14 +1,22 @@
 package de.difuture.ekut.pht.trainrouter.controller;
 
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
+import de.difuture.ekut.pht.lib.core.messages.TrainPassing;
 import de.difuture.ekut.pht.trainrouter.api.RouteResponse;
+import de.difuture.ekut.pht.trainrouter.api.StationResponse;
 import de.difuture.ekut.pht.trainrouter.message.TrainUpdateStreams;
+import de.difuture.ekut.pht.trainrouter.model.Station;
 import de.difuture.ekut.pht.trainrouter.model.TrainRoute;
+import de.difuture.ekut.pht.trainrouter.repository.StationRepository;
+import org.hibernate.validator.internal.engine.messageinterpolation.InterpolationTermType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,39 +24,102 @@ import org.springframework.web.bind.annotation.RestController;
 import de.difuture.ekut.pht.trainrouter.repository.TrainRouteRepository;
 import lombok.NonNull;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.net.URI;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class TrainRouterController {
 	
-	//private final ReservedTrainRepository reservedtrainRepository;
 	private final TrainRouteRepository trainRouteRepository;
+	private final StationRepository stationRepository;
+
+	private final TrainUpdateStreams trainUpdateStreams;
+	private final DiscoveryClient discoveryClient;
+
+    @Autowired
+    public TrainRouterController(
+            @NonNull final TrainRouteRepository trainRouteRepository,
+            @NonNull final StationRepository stationRepository,
+            @NonNull final TrainUpdateStreams trainUpdateStreams,
+            @NonNull final DiscoveryClient discoveryClient) {
+
+        this.trainRouteRepository = trainRouteRepository;
+        this.stationRepository = stationRepository;
+        this.trainUpdateStreams = trainUpdateStreams;
+        this.discoveryClient = discoveryClient;
+    }
+
+    private void updateStations() {
+
+        final List<Station> stations = this.discoveryClient.getInstances("station")
+                .stream()
+                .map( serviceInstance ->
+                    new Station(serviceInstance.getUri())
+        ).collect(Collectors.toList());
+
+        // Safe stations if not already present
+        for (final Station station: stations) {
+
+            final URI uri = station.getUri();
+            final Optional<Station> optStation
+                    = this.stationRepository.findStationByUri(uri);
+            if ( ! optStation.isPresent()) {
+
+                this.stationRepository.save(new Station(uri));
+            }
+        }
+    }
+
 
 	@StreamListener(TrainUpdateStreams.TRAIN_AVAILABLE)
 	public void handleTrainAvailable(@Payload TrainAvailable message) {
 
-	    final UUID trainID = message.getTrainID();
-        System.out.println("MESSAGE " + trainID);
+        // Update known stations form the service discovery
+        this.updateStations();
+        final Iterable<Station> stations = this.stationRepository.findAll();
 
-        final Optional<TrainRoute> route = this.trainRouteRepository.findById(trainID);
-        this.trainRouteRepository.save(
-                route.isPresent() ?
-                            route.get().nextStop() : new TrainRoute(trainID, 0L)
-        );
+        final UUID trainID = message.getTrainID();
+	    final Optional<TrainRoute> routeOpt = this.trainRouteRepository.findById(trainID);
+	    final Optional<UUID> nextStationOpt = this.trainRouteRepository.save(
+
+	            routeOpt.isPresent() ?
+                        routeOpt.get().next(stations) :
+                        new TrainRoute(trainID, stations)
+        ).getNextStation();
+
+	    // If the TrainRoute has a next station, then let the train pass
+        if (nextStationOpt.isPresent()) {
+
+            final Optional<Station> n
+                    = this.stationRepository.findById(nextStationOpt.get());
+            this.broadcastTrainRoute(
+                    new TrainPassing(
+                            trainID,
+                            n.get().getUri(),
+                            n.get().getHost(),
+                            n.get().getPort()));
+        }
 	}
 
-	@Autowired
-	public TrainRouterController(
-			@NonNull final TrainRouteRepository trainRouteRepository) {
+    private boolean broadcastTrainRoute(final TrainPassing route) {
 
-		this.trainRouteRepository = trainRouteRepository;
-	}
-	
+        return this.trainUpdateStreams.outboundTrack().send(
+                MessageBuilder
+                        .withPayload(route)
+                        .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                        .build());
+    }
 
     @RequestMapping(value = "/route", method = RequestMethod.GET)
     public RouteResponse route() {
 
 	    return new RouteResponse(this.trainRouteRepository.findAll());
+    }
+
+    @RequestMapping(value = "/station", method = RequestMethod.GET)
+    public StationResponse station() {
+
+        return new StationResponse(this.stationRepository.findAll());
     }
 }
