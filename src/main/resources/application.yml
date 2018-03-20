@@ -3,4 +3,4 @@ spring.application.name: trainrouter
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://134.2.25.78:8761/eureka/
+      defaultZone: http://35.195.42.68:8761/eureka
