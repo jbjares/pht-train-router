@@ -1,0 +1,8 @@
+.classpath
+.dockerignore
+.git
+.gitignore
+pom.xml
+.project
+.settings
+src
