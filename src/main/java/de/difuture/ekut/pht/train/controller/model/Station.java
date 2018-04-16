@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.trainrouter.model;
+package de.difuture.ekut.pht.train.controller.model;
 
 
 import lombok.Data;

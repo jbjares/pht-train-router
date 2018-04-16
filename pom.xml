@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>de.difuture.ekut.pht</groupId>
-	<artifactId>trainrouter</artifactId>
+	<groupId>de.difuture.ekut.pht.train</groupId>
+	<artifactId>traincontroller</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>trainrouter</name>
-	<description>PHT - Assigns stations to trains and publishes TrainPassing, is notified by TrainAvailable</description>
+	<name>traincontroller</name>
+	<description>PHT - Assigns stations to trains and notifies stations once the train is available</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -125,8 +125,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>

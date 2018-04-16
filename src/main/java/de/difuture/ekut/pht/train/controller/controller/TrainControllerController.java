@@ -1,15 +1,15 @@
-package de.difuture.ekut.pht.trainrouter.controller;
+package de.difuture.ekut.pht.train.controller.controller;
 
 
 import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
 import de.difuture.ekut.pht.lib.core.messages.TrainPassing;
-import de.difuture.ekut.pht.trainrouter.api.RouteResponse;
-import de.difuture.ekut.pht.trainrouter.api.StationResponse;
-import de.difuture.ekut.pht.trainrouter.message.TrainUpdateStreams;
-import de.difuture.ekut.pht.trainrouter.model.Station;
-import de.difuture.ekut.pht.trainrouter.model.TrainRoute;
-import de.difuture.ekut.pht.trainrouter.repository.StationRepository;
-import org.hibernate.validator.internal.engine.messageinterpolation.InterpolationTermType;
+import de.difuture.ekut.pht.train.controller.api.RouteResponse;
+import de.difuture.ekut.pht.train.controller.api.StationResponse;
+import de.difuture.ekut.pht.train.controller.message.TrainUpdateStreams;
+import de.difuture.ekut.pht.train.controller.model.Station;
+import de.difuture.ekut.pht.train.controller.model.TrainRoute;
+import de.difuture.ekut.pht.train.controller.repository.StationRepository;
+import de.difuture.ekut.pht.train.controller.repository.TrainRouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.difuture.ekut.pht.trainrouter.repository.TrainRouteRepository;
 import lombok.NonNull;
 
 import java.net.URI;
@@ -29,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-public class TrainRouterController {
+public class TrainControllerController {
 	
 	private final TrainRouteRepository trainRouteRepository;
 	private final StationRepository stationRepository;
@@ -38,7 +37,7 @@ public class TrainRouterController {
 	private final DiscoveryClient discoveryClient;
 
     @Autowired
-    public TrainRouterController(
+    public TrainControllerController(
             @NonNull final TrainRouteRepository trainRouteRepository,
             @NonNull final StationRepository stationRepository,
             @NonNull final TrainUpdateStreams trainUpdateStreams,

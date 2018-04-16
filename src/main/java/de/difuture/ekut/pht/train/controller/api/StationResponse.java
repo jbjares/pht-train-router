@@ -1,7 +1,7 @@
-package de.difuture.ekut.pht.trainrouter.api;
+package de.difuture.ekut.pht.train.controller.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.difuture.ekut.pht.trainrouter.model.Station;
+import de.difuture.ekut.pht.train.controller.model.Station;
 import lombok.Value;
 
 @Value

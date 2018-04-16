@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.trainrouter.message;
+package de.difuture.ekut.pht.train.controller.message;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.Output;
