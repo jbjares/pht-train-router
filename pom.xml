@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.difuture.ekut.pht.train</groupId>
-	<artifactId>traincontroller</artifactId>
+	<artifactId>train-controller</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
