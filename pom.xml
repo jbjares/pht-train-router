@@ -8,7 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>traincontroller</name>
+	<name>train-controller</name>
 	<description>PHT - Assigns stations to trains and notifies stations once the train is available</description>
 
 	<parent>
