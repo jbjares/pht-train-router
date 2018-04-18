@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: trainrouter
+    name: train-controller
   cloud:
     stream:
       kafka:
@@ -37,7 +37,7 @@ eureka:
 spring:
   profiles: docker
   application:
-    name: trainrouter
+    name: train-controller
   cloud:
     stream:
       kafka:
@@ -58,7 +58,7 @@ server:
 
 eureka:
   instance:
-    hostname: trainrouter
+    hostname: train-controller
     prefer-ip-address: true
   client:
     registerWithEureka: true
