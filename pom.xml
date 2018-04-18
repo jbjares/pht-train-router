@@ -129,6 +129,7 @@
     					</execution>
   				</executions>
 				<configuration>
+					<pullNewerImage>false</pullNewerImage>
 					<repository>${docker.image.prefix}/${project.artifactId}</repository>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
