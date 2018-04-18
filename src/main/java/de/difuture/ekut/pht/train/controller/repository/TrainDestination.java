@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.route;
+package de.difuture.ekut.pht.train.controller.repository;
 
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;

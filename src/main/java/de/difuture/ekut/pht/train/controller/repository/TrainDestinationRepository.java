@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.route;
+package de.difuture.ekut.pht.train.controller.repository;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 

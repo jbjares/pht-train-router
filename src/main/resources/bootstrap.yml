@@ -19,6 +19,10 @@ spring:
         max-interval: 10000
         multiplier: 2
         max-attempts: 10
+  data:
+    neo4j:
+      uri: bolt://neo4j:7687
+
 
 eureka:
   instance:
@@ -28,10 +32,6 @@ eureka:
     fetchRegistry: true
     serviceUrl:
             defaultZone: http://localhost:8761/eureka/
-
-#endpoints:
-# shutdown:
-#  enabled: true
 
 ---
 spring:
@@ -53,6 +53,10 @@ spring:
         max-interval: 10000
         multiplier: 2
         max-attempts: 10
+  data:
+    neo4j:
+      uri: bolt://neo4j:7687
+
 server:
     port: 6004
 
@@ -65,7 +69,3 @@ eureka:
     fetchRegistry: true
     serviceUrl:
             defaultZone: http://eureka-server:8761/eureka/
-
-#endpoints:
-# shutdown:
-#  enabled: true
