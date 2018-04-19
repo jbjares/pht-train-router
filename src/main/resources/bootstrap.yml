@@ -39,10 +39,13 @@ eureka:
             defaultZone: http://localhost:8761/eureka/
 
 ---
+
 spring:
   h2:
     console:
       enabled: true
+      settings:
+        web-allow-others: true
   profiles: docker
   application:
     name: train-controller
