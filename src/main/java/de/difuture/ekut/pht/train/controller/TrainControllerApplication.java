@@ -10,6 +10,8 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @SpringBootApplication
@@ -30,6 +32,7 @@ public class TrainControllerApplication {
     }
 
     @StreamListener(target=Sink.INPUT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sink(TrainAvailable trainAvailable) {
 
         System.out.println(trainAvailable);
