@@ -2,6 +2,9 @@ server:
   port: 6004
 
 spring:
+  h2:
+    console:
+      enabled: true
   application:
     name: train-controller
   cloud:
@@ -37,6 +40,9 @@ eureka:
 
 ---
 spring:
+  h2:
+    console:
+      enabled: true
   profiles: docker
   application:
     name: train-controller
