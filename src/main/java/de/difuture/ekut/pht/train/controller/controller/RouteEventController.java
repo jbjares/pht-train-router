@@ -28,17 +28,6 @@ public class RouteEventController {
         this.routeEventRepository = routeEventRepository;
     }
 
-    @StreamListener(Sink.INPUT)
-    public void sink(TrainAvailable trainAvailable) {
-
-        System.out.println(trainAvailable);
-        // Save the trainAvailable message as RouteEvent
-        this.routeEventRepository.save(
-                new RouteEvent(
-                        trainAvailable.getTag(),
-                        trainAvailable.getTrainID()));
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<RouteEvent> getAll() {
 
