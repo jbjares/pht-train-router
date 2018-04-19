@@ -1,5 +1,5 @@
 package de.difuture.ekut.pht.train.controller.repository.routeevent;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RouteEventRepository extends CrudRepository<RouteEvent, Long> {}
+public interface RouteEventRepository extends JpaRepository<RouteEvent, Long> {}

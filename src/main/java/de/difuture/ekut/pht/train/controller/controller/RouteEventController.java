@@ -36,7 +36,7 @@ public class RouteEventController {
         System.out.println(trainAvailable);
         // Save the trainAvailable message as RouteEvent
         final RouteEvent event = new RouteEvent();
-        System.out.println("SAVED as " + this.routeEventRepository.save(event).getId());
+        System.out.println("SAVED as " + this.routeEventRepository.saveAndFlush(event).getId());
 
 
         System.out.println("RouteEvent Repository has in Sink" + this.routeEventRepository.count());

@@ -45,7 +45,7 @@ public class StationController {
 
             throw new StationAlreadyExistsException(station);
         }
-        final Station result = this.stationRepository.save(station);
+        final Station result = this.stationRepository.saveAndFlush(station);
         final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
                 .buildAndExpand(result.getId()).toUri();
