@@ -1,6 +1,7 @@
 package de.difuture.ekut.pht.train.controller.controller;
 
 import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
+import de.difuture.ekut.pht.train.controller.repository.RouteEvent;
 import de.difuture.ekut.pht.train.controller.repository.RouteEventRepository;
 import de.difuture.ekut.pht.train.controller.repository.Station;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,14 @@ public class RouteEventController {
 
         System.out.println(trainAvailable);
         // Save the trainAvailable message as RouteEvent
-        //final RouteEvent event = new RouteEvent(trainAvailable.getTag(), trainAvailable.getTrainID());
-        System.out.println("SAVED as " + this.routeEventRepository.save(new Station(null, URI.create("localhost"))).getId());
+        final RouteEvent event = new RouteEvent();
+        System.out.println("SAVED as " + this.routeEventRepository.save(event).getId());
 
         System.out.println("RouteEvent Repository has in Sink" + this.routeEventRepository.count());
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Iterable<Station> getAll() {
+    public Iterable<RouteEvent> getAll() {
 
         System.out.println("RouteEvent Repository has in Controller" + this.routeEventRepository.count());
         return this.routeEventRepository.findAll();

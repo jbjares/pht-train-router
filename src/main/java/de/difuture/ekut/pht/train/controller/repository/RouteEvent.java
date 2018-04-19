@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.UUID;
 
 
 /**
@@ -27,17 +26,4 @@ public class RouteEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    private String tag;
-
-    private UUID trainID;
-
-    private boolean processed;
-
-    public RouteEvent(String tag, UUID trainID) {
-
-        this.tag = tag;
-        this.trainID = trainID;
-        this.processed = false;
-    }
 }
