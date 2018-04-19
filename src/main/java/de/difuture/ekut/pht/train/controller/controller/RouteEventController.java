@@ -31,7 +31,7 @@ public class RouteEventController {
     @StreamListener(Sink.INPUT)
     public void sink(TrainAvailable trainAvailable) {
 
-
+        System.out.println(trainAvailable);
         // Save the trainAvailable message as RouteEvent
         this.routeEventRepository.save(
                 new RouteEvent(
