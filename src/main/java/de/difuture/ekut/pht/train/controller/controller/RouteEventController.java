@@ -38,13 +38,12 @@ public class RouteEventController {
             propagation = Propagation.REQUIRES_NEW)
     public void sink(TrainAvailable trainAvailable) {
 
-        System.out.println(trainAvailable);
         // Save the trainAvailable message as RouteEvent
-        final RouteEvent event = new RouteEvent();
-        System.out.println("SAVED as " + this.routeEventRepository.saveAndFlush(event).getId());
-
-
-        System.out.println("RouteEvent Repository has in Sink" + this.routeEventRepository.count());
+        this.routeEventRepository.saveAndFlush(
+                new RouteEvent(
+                        trainAvailable.getTrainID(),
+                        trainAvailable.getTag())
+        );
     }
 
     @RequestMapping(method = RequestMethod.GET)
