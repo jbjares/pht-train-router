@@ -29,7 +29,7 @@ public class TrainControllerApplication {
 		this.routeEventRepository = routeEventRepository;
 	}
 
-	@StreamListener(Sink.INPUT)
+	@StreamListener(target=Sink.INPUT)
 	public void sink(TrainAvailable trainAvailable) {
 
 		System.out.println(trainAvailable);

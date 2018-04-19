@@ -8,7 +8,10 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: kafka:9092              
+          brokers: kafka:9092
+      bindings:
+        input:
+          destination: trainupdate
           #    config:
           #      discovery:
           #        enabled: true
@@ -22,7 +25,6 @@ spring:
   data:
     neo4j:
       uri: bolt://neo4j:7687
-
 
 eureka:
   instance:
@@ -53,6 +55,9 @@ spring:
           #        max-interval: 10000
           #        multiplier: 2
           #        max-attempts: 10
+      bindings:
+        input:
+          destination: trainupdate
   data:
     neo4j:
       uri: bolt://neo4j:7687
