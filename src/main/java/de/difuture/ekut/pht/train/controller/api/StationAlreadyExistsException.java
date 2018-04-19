@@ -1,6 +1,6 @@
 package de.difuture.ekut.pht.train.controller.api;
 
-import de.difuture.ekut.pht.train.controller.repository.Station;
+import de.difuture.ekut.pht.train.controller.repository.station.Station;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

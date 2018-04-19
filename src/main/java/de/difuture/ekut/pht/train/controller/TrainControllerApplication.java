@@ -6,7 +6,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 
 @SpringBootApplication
-@EnableNeo4jRepositories("de.difuture.ekut.pht.train.controller.repository")
+@EnableNeo4jRepositories("de.difuture.ekut.pht.train.controller.repository.traindestination")
 public class TrainControllerApplication {
 
 	public static void main(String[] args) {

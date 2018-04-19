@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.repository;
+package de.difuture.ekut.pht.train.controller.repository.station;
 
 import org.springframework.data.repository.CrudRepository;
 

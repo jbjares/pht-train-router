@@ -1,9 +1,8 @@
 package de.difuture.ekut.pht.train.controller.controller;
 
 import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
-import de.difuture.ekut.pht.train.controller.repository.RouteEvent;
-import de.difuture.ekut.pht.train.controller.repository.RouteEventRepository;
-import de.difuture.ekut.pht.train.controller.repository.Station;
+import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEvent;
+import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -11,8 +10,6 @@ import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.net.URI;
 
 
 /**

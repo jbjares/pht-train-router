@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.repository;
+package de.difuture.ekut.pht.train.controller.repository.routeevent;
 
 
 import lombok.AllArgsConstructor;
