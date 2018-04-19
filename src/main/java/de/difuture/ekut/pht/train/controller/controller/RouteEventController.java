@@ -33,7 +33,9 @@ public class RouteEventController {
     }
 
     @StreamListener(target=Sink.INPUT)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(
+            transactionManager = "jpaTransactionManager",
+            propagation = Propagation.REQUIRES_NEW)
     public void sink(TrainAvailable trainAvailable) {
 
         System.out.println(trainAvailable);
