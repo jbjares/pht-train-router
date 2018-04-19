@@ -2,15 +2,10 @@ package de.difuture.ekut.pht.train.controller;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 
 
-@SpringBootApplication
-@EnableNeo4jRepositories("de.difuture.ekut.pht.train.controller.repository.traindestination")
-@EnableJpaRepositories(basePackages = {
-        "de.difuture.ekut.pht.train.controller.repository.routeevent",
-        "de.difuture.ekut.pht.train.controller.repository.station"})
+@SpringBootApplication(exclude = Neo4jDataAutoConfiguration.class)
 public class TrainControllerApplication {
 
 	public static void main(String[] args) {

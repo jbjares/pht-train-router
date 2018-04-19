@@ -25,9 +25,6 @@ spring:
           #        max-interval: 10000
           #        multiplier: 2
           #        max-attempts: 10
-  data:
-    neo4j:
-      uri: bolt://neo4j:7687
 
 eureka:
   instance:
@@ -67,9 +64,6 @@ spring:
       bindings:
         input:
           destination: trainupdate
-  data:
-    neo4j:
-      uri: bolt://neo4j:7687
 
 server:
     port: 6004
