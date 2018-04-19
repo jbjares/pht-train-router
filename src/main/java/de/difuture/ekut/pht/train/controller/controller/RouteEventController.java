@@ -38,13 +38,13 @@ public class RouteEventController {
         final RouteEvent event = new RouteEvent(trainAvailable.getTag(), trainAvailable.getTrainID());
         System.out.println("SAVED as " + this.routeEventRepository.save(event).getId());
 
-        System.out.print("RouteEvent Repository has in Sink" + this.routeEventRepository.count());
+        System.out.println("RouteEvent Repository has in Sink" + this.routeEventRepository.count());
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<RouteEvent> getAll() {
 
-        System.out.print("RouteEvent Repository has in Controller" + this.routeEventRepository.count());
+        System.out.println("RouteEvent Repository has in Controller" + this.routeEventRepository.count());
         return this.routeEventRepository.findAll();
     }
 }
