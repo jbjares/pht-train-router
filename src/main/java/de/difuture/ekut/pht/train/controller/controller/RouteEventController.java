@@ -35,10 +35,8 @@ public class RouteEventController {
 
         System.out.println(trainAvailable);
         // Save the trainAvailable message as RouteEvent
-        this.routeEventRepository.save(
-                new RouteEvent(
-                        trainAvailable.getTag(),
-                        trainAvailable.getTrainID()));
+        final RouteEvent event = new RouteEvent(trainAvailable.getTag(), trainAvailable.getTrainID());
+        System.out.println("SAVED as " + this.routeEventRepository.save(event).getId());
     }
 
     @RequestMapping(method = RequestMethod.GET)

@@ -1,7 +1,9 @@
 package de.difuture.ekut.pht.train.controller.repository;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +18,10 @@ import java.util.UUID;
  *
  * @author Lukas Zimmermann
  */
-@Data
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RouteEvent {
 
     @Id
