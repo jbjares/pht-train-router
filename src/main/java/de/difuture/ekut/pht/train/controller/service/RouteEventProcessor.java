@@ -5,7 +5,6 @@ import de.difuture.ekut.pht.lib.core.traintag.TrainTag;
 import de.difuture.ekut.pht.lib.core.traintag.TrainTagLiteral;
 import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEvent;
 import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEventRepository;
-import de.difuture.ekut.pht.train.controller.scheduler.RoutePlanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,11 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Optional;
 
+
+/**
+ * Component scans events happening on the route and
+ *
+ */
 @Component
 public class RouteEventProcessor {
 
@@ -64,5 +68,10 @@ public class RouteEventProcessor {
             routeEvent.setProcessedInstant(Instant.now());
             this.routeEventRepository.saveAndFlush(routeEvent);
         }
+    }
+
+    private void sendTrainReady() {
+
+
     }
 }

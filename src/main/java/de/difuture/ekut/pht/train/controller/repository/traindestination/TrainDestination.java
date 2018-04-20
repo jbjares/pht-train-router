@@ -29,42 +29,36 @@ public class TrainDestination {
 
     // Tag that the station has been assigned with, must be an UUID. This is the same as
     // the Tag of the Docker Image
-    private UUID stationID;
+    private String stationID;
 
     // Id of the train that is associated with this route
-    private UUID trainID;
+    private String trainID;
 
-    @Relationship(type = "outgoing")
-    private List<TrainDestination> outgoing;
+    @Relationship(type = "IS_PARENT_OF")
+    private List<TrainDestination> children;
+
+    @Relationship(type = "IS_CHILD_OF")
+    private List<TrainDestination> parents;
 
     // Whether the station has reported to have this train visited
-    private boolean visited;
+    private boolean hasBeenVisited;
 
-    public void addOutgoing(final TrainDestination trainDestination) {
-
-        this.outgoing.add(trainDestination);
-    }
+    // Whether the station is ready to be visited
+    private boolean canBeVisited;
 
     private TrainDestination(
             UUID stationID,
-            UUID trainID,
-            List<TrainDestination> incoming,
-            List<TrainDestination> outgoing) {
+            UUID trainID) {
 
-        this.stationID = stationID;
-        this.trainID = trainID;
-
-        // Safe copy of incoming and outgoing links
-        this.outgoing = new ArrayList<>(outgoing);
+        this.stationID = stationID.toString();
+        this.trainID = trainID.toString();
+        this.canBeVisited = false;
+        this.hasBeenVisited = false;
     }
 
     public static TrainDestination of(Station station, UUID trainID) {
 
-        return new TrainDestination(
-                station.getId(),
-                trainID,
-                new ArrayList<>(),
-                new ArrayList<>());
+        return new TrainDestination(station.getId(), trainID);
     }
 
     public static Optional<TrainDestination> of(Iterable<Station> stations, UUID trainID) {
@@ -75,15 +69,17 @@ public class TrainDestination {
 
             return Optional.empty();
         }
+        TrainDestination parent = TrainDestination.of(iterator.next(), trainID);
+        final TrainDestination head = parent;
 
-        TrainDestination headDestination = TrainDestination.of(iterator.next(), trainID);
-        TrainDestination result = headDestination;
         while (iterator.hasNext()) {
 
-            final TrainDestination childDestination = TrainDestination.of(iterator.next(), trainID);
-            headDestination.setOutgoing(Collections.singletonList(childDestination));
-            headDestination = childDestination;
+            final TrainDestination child = TrainDestination.of(iterator.next(), trainID);
+            parent.setChildren(Collections.singletonList(child));
+            child.setParents(Collections.singletonList(parent));
+            parent = child;
         }
-        return Optional.of(result);
+        head.setCanBeVisited(true);
+        return Optional.of(head);
     }
 }

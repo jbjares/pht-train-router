@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.scheduler;
+package de.difuture.ekut.pht.train.controller.service;
 
 import de.difuture.ekut.pht.train.controller.repository.station.Station;
 import de.difuture.ekut.pht.train.controller.repository.station.StationRepository;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -47,12 +46,7 @@ public class RoutePlanner {
         // Get all stations that are active
         final List<Station> enabledStations = this.stationRepository.findAllByEnabledIsTrue();
         Collections.shuffle(enabledStations);
-
-        final Optional<TrainDestination> route = TrainDestination.of(enabledStations, trainID);
-        if (route.isPresent()) {
-
-            this.trainDestinationRepository.save(route.get());
-            System.out.println("Route saved");
-        }
+        TrainDestination.of(enabledStations, trainID)
+            .ifPresent(this.trainDestinationRepository::save);
     }
 }
