@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.Instant;
 import java.util.UUID;
 
 
@@ -34,11 +35,16 @@ public class RouteEvent {
     // TrainID that this train belongs to
     private UUID trainID;
 
+    // Whether this routeEvent has been visited
     private boolean processed;
+
+    // When this event has been visited
+    private Instant processedInstant;
 
     public RouteEvent(UUID trainID, String tag) {
 
         this.trainID = trainID;
         this.tag = tag;
+        this.processed = false;
     }
 }

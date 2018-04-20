@@ -1,7 +1,6 @@
 package de.difuture.ekut.pht.train.controller.controller;
 
 
-import de.difuture.ekut.pht.train.controller.api.StationAlreadyExistsException;
 import de.difuture.ekut.pht.train.controller.repository.station.Station;
 import de.difuture.ekut.pht.train.controller.repository.station.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.Instant;
 
 
 /**
@@ -37,15 +37,17 @@ public class StationController {
      * @param station The station that should be created.
      */
     @RequestMapping(method = RequestMethod.POST)
-    ResponseEntity<?> add(@Valid @RequestBody Station station) {
+    ResponseEntity<?> ping(@Valid @RequestBody Station station) {
 
-        if (this.stationRepository
+        final Station modifiedStation = this.stationRepository
                 .findStationByUri(station.getUri())
-                .isPresent()) {
+                .orElse(station);
 
-            throw new StationAlreadyExistsException(station);
-        }
-        final Station result = this.stationRepository.saveAndFlush(station);
+        // Reenable the station and set the last ping
+        modifiedStation.setLast_ping(Instant.now());
+        modifiedStation.setEnabled(true);
+
+        final Station result = this.stationRepository.saveAndFlush(modifiedStation);
         final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
                 .buildAndExpand(result.getId()).toUri();

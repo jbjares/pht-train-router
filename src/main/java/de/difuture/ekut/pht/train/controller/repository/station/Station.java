@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  *
@@ -27,8 +29,14 @@ public final class Station {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private UUID id;
 
     @NotNull
     private URI uri;
+
+    // When the station has last sent a ping to the train controller
+    private Instant last_ping;
+
+    // Whether the station is currently enabled
+    private boolean enabled;
 }

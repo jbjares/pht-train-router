@@ -49,7 +49,6 @@ public class RouteEventController {
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<RouteEvent> getAll() {
 
-        System.out.println("RouteEvent Repository has in Controller" + this.routeEventRepository.count());
         return this.routeEventRepository.findAll();
     }
 }
