@@ -1,6 +1,6 @@
 package de.difuture.ekut.pht.train.router.repository.traindestination;
 
-import de.difuture.ekut.pht.train.router.repository.station.Station;
+import de.difuture.ekut.pht.lib.core.model.Station;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,7 +60,7 @@ public class TrainDestination {
 
     public static TrainDestination of(Station station, UUID trainID) {
 
-        return new TrainDestination(station.getId(), trainID);
+        return new TrainDestination(station.getStationID(), trainID);
     }
 
     public static Optional<TrainDestination> of(Iterable<Station> stations, UUID trainID) {

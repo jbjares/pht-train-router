@@ -1,8 +1,8 @@
 package de.difuture.ekut.pht.train.router.service;
 
 import de.difuture.ekut.pht.lib.core.messages.TrainVisit;
-import de.difuture.ekut.pht.train.router.repository.station.Station;
-import de.difuture.ekut.pht.train.router.repository.station.StationRepository;
+import de.difuture.ekut.pht.lib.core.model.Station;
+import de.difuture.ekut.pht.train.router.client.StationClient;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestination;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,24 +20,29 @@ public class RoutePlanner {
     // Route Planner needs to have access to the TrainDestinationRepository
     private final TrainDestinationRepository trainDestinationRepository;
 
-    // Access to the Station Repository is needed to assemble the routes
-    private final StationRepository stationRepository;
-
     // Access to the Processer output to publish available routes
     private final Processor processor;
+
+    // Client for getting list with all station
+    private final StationClient stationClient;
 
     private final Queue<Long> pendingTrainVisits;
 
     @Autowired
     public RoutePlanner(
             TrainDestinationRepository trainDestinationRepository,
-            StationRepository stationRepository,
+            StationClient stationClient,
             Processor processor) {
 
         this.trainDestinationRepository = trainDestinationRepository;
-        this.stationRepository = stationRepository;
+        this.stationClient = stationClient;
         this.processor = processor;
         this.pendingTrainVisits = new LinkedBlockingQueue<>();
+    }
+
+    private List<Station> getStations() {
+
+        return this.stationClient.getStations();
     }
 
     /**
@@ -55,12 +60,11 @@ public class RoutePlanner {
     private void linearRandom(final UUID trainID) {
 
         // Get all stations that are active
-        final List<Station> enabledStations = this.stationRepository.findAllByEnabledIsTrue();
-        Collections.shuffle(enabledStations);
-        TrainDestination.of(enabledStations, trainID)
+        final List<Station> stations = this.getStations();
+        Collections.shuffle(stations);
+        TrainDestination.of(stations, trainID)
             .ifPresent(this.trainDestinationRepository::save);
     }
-
 
 
     @Scheduled(fixedDelay = 1000)

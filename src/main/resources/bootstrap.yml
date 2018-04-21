@@ -6,7 +6,7 @@ spring:
     console:
       enabled: true
   application:
-    name: train-router
+    name: train-granter
   cloud:
     stream:
       kafka:
@@ -47,7 +47,7 @@ spring:
         web-allow-others: true
   profiles: docker
   application:
-    name: train-router
+    name: train-granter
   cloud:
     stream:
       kafka:
@@ -74,7 +74,7 @@ server:
 
 eureka:
   instance:
-    hostname: train-router
+    hostname: train-granter
     prefer-ip-address: true
   client:
     registerWithEureka: true
