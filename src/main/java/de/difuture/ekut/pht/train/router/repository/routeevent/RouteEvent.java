@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.repository.routeevent;
+package de.difuture.ekut.pht.train.router.repository.routeevent;
 
 
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class RouteEvent {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    // Repository tag that the new image was checked in with
+    // Repository trainTag that the new image was checked in with
     private String tag;
 
     // TrainID that this train belongs to

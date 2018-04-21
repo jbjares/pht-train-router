@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.repository.station;
+package de.difuture.ekut.pht.train.router.repository.station;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

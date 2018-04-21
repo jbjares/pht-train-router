@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.repository.routeevent;
+package de.difuture.ekut.pht.train.router.repository.routeevent;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

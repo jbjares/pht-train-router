@@ -1,6 +1,6 @@
-package de.difuture.ekut.pht.train.controller.repository.traindestination;
+package de.difuture.ekut.pht.train.router.repository.traindestination;
 
-import de.difuture.ekut.pht.train.controller.repository.station.Station;
+import de.difuture.ekut.pht.train.router.repository.station.Station;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.neo4j.ogm.annotation.NodeEntity;

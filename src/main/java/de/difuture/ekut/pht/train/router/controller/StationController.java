@@ -1,8 +1,8 @@
-package de.difuture.ekut.pht.train.controller.controller;
+package de.difuture.ekut.pht.train.router.controller;
 
 
-import de.difuture.ekut.pht.train.controller.repository.station.Station;
-import de.difuture.ekut.pht.train.controller.repository.station.StationRepository;
+import de.difuture.ekut.pht.train.router.repository.station.Station;
+import de.difuture.ekut.pht.train.router.repository.station.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class StationController {
     }
 
     /**
-     * Registers the station at the train controller application.
+     * Registers the station at the train router application.
      * The station is just represented as a URI.
      *
      * @param station The station that should be created.

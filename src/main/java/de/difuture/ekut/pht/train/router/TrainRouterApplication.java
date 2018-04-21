@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller;
+package de.difuture.ekut.pht.train.router;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(exclude = Neo4jDataAutoConfiguration.class)
 @EnableScheduling
-public class TrainControllerApplication {
+public class TrainRouterApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TrainControllerApplication.class, args);
+		SpringApplication.run(TrainRouterApplication.class, args);
 	}
 }

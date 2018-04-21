@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.difuture.ekut.pht.train</groupId>
-	<artifactId>train-controller</artifactId>
+	<artifactId>train-router</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>train-controller</name>
-	<description>PHT - Assigns stations to trains and notifies stations once the train is available</description>
+	<name>train-router</name>
+	<description>PHT - Consumes train updates, manages the routes of trains to stations, and publishes TrainVisit messages</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

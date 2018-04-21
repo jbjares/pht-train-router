@@ -1,8 +1,8 @@
-package de.difuture.ekut.pht.train.controller.controller;
+package de.difuture.ekut.pht.train.router.controller;
 
 import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
-import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEvent;
-import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEventRepository;
+import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
+import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -42,7 +42,7 @@ public class RouteEventController {
         this.routeEventRepository.saveAndFlush(
                 new RouteEvent(
                         trainAvailable.getTrainID(),
-                        trainAvailable.getTag())
+                        trainAvailable.getTrainTag())
         );
     }
 

@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.config;
+package de.difuture.ekut.pht.train.router.config;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableNeo4jRepositories(
-        basePackages = {"de.difuture.ekut.pht.train.controller.repository.traindestination"},
+        basePackages = {"de.difuture.ekut.pht.train.router.repository.traindestination"},
         transactionManagerRef = "neo4jTransactionManager")
 @EnableJpaRepositories(
         basePackages = {
-            "de.difuture.ekut.pht.train.controller.repository.routeevent",
-            "de.difuture.ekut.pht.train.controller.repository.station"},
+                "de.difuture.ekut.pht.train.router.repository.routeevent",
+                "de.difuture.ekut.pht.train.router.repository.station"},
         transactionManagerRef = "jpaTransactionManager")
 @EnableTransactionManagement
 public class Neo4jConfiguration {
@@ -36,7 +36,7 @@ public class Neo4jConfiguration {
 
         return new SessionFactory(
                 configuration,
-                "de.difuture.ekut.pht.train.controller.repository.traindestination");
+                "de.difuture.ekut.pht.train.router.repository.traindestination");
     }
 
     @Bean

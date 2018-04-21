@@ -1,10 +1,10 @@
-package de.difuture.ekut.pht.train.controller.service;
+package de.difuture.ekut.pht.train.router.service;
 
 import de.difuture.ekut.pht.lib.core.traintag.InvalidTrainTagException;
 import de.difuture.ekut.pht.lib.core.traintag.TrainTag;
 import de.difuture.ekut.pht.lib.core.traintag.TrainTagLiteral;
-import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEvent;
-import de.difuture.ekut.pht.train.controller.repository.routeevent.RouteEventRepository;
+import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
+import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -50,14 +50,14 @@ public class RouteEventProcessor {
             try {
                 final TrainTag trainTag = TrainTag.of(routeEvent.getTag());
 
-                // If the route Event is marked with a start tag, we need to generate a new route
+                // If the route Event is marked with a start trainTag, we need to generate a new route
                 // for this train
                 if (trainTag == TrainTagLiteral.START) {
 
                     this.routePlanner.plan(routeEvent.getTrainID());
                 }
 
-            // This event is invalid, since the tag of the train is not allowe
+            // This event is invalid, since the trainTag of the train is not allowe
             } catch (InvalidTrainTagException e) {
 
                 this.routeEventRepository.delete(routeEvent);

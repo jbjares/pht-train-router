@@ -1,4 +1,4 @@
-package de.difuture.ekut.pht.train.controller.repository.station;
+package de.difuture.ekut.pht.train.router.repository.station;
 
 
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /**
  *
- * Represents a station as the train controller sees stations. The train controller
+ * Represents a station as the train router sees stations. The train router
  * sees the station only as an URI, so it can notify stations via WebHooks.
  *
  * Also, a station has to register all the URIs that it will use for pushing the
@@ -34,7 +34,7 @@ public final class Station {
     @NotNull
     private URI uri;
 
-    // When the station has last sent a ping to the train controller
+    // When the station has last sent a ping to the train router
     private Instant last_ping;
 
     // Whether the station is currently enabled

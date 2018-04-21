@@ -1,9 +1,9 @@
-package de.difuture.ekut.pht.train.controller.service;
+package de.difuture.ekut.pht.train.router.service;
 
-import de.difuture.ekut.pht.train.controller.repository.station.Station;
-import de.difuture.ekut.pht.train.controller.repository.station.StationRepository;
-import de.difuture.ekut.pht.train.controller.repository.traindestination.TrainDestination;
-import de.difuture.ekut.pht.train.controller.repository.traindestination.TrainDestinationRepository;
+import de.difuture.ekut.pht.train.router.repository.station.Station;
+import de.difuture.ekut.pht.train.router.repository.station.StationRepository;
+import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestination;
+import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
