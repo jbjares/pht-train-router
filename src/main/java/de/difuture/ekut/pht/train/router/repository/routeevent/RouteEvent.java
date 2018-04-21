@@ -1,6 +1,8 @@
 package de.difuture.ekut.pht.train.router.repository.routeevent;
 
 
+import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
+import de.difuture.ekut.pht.lib.core.model.Train;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.net.URI;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -35,16 +38,25 @@ public class RouteEvent {
     // TrainID that this train belongs to
     private UUID trainID;
 
+    // docker Registry URI of the train
+    private URI dockerRegistryURI;
+
     // Whether this routeEvent has been visited
     private boolean processed;
 
     // When this event has been visited
     private Instant processedInstant;
 
-    public RouteEvent(UUID trainID, String tag) {
+    public RouteEvent(final TrainAvailable trainAvailable) {
 
-        this.trainID = trainID;
-        this.tag = tag;
+        this.trainID = trainAvailable.getTrainID();
+        this.dockerRegistryURI = trainAvailable.getTrainRegistryURI();
+        this.tag = trainAvailable.getTrainTag();
         this.processed = false;
+    }
+
+    public Train toTrain() {
+
+        return new Train(this.trainID, this.dockerRegistryURI);
     }
 }

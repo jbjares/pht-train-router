@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Provides the handlers for the /routeevent route
+ * Provides the handlers for the /routeevent trainrouteassignment
  *
  * @author Lukas Zimmermann
  */
@@ -38,9 +38,7 @@ public class RouteEventController {
 
         // Save the trainAvailable message as RouteEvent
         this.routeEventRepository.saveAndFlush(
-                new RouteEvent(
-                        trainAvailable.getTrainID(),
-                        trainAvailable.getTrainTag())
+                new RouteEvent(trainAvailable)
         );
     }
 

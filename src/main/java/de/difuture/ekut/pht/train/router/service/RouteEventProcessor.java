@@ -14,16 +14,16 @@ import java.util.Optional;
 
 
 /**
- * Component scans events happening on the route and
+ * Component scans events happening on the trainrouteassignment and
  *
  */
 @Component
 public class RouteEventProcessor {
 
-    // Needed for fetching unprocessed route events
+    // Needed for fetching unprocessed trainrouteassignment events
     private final RouteEventRepository routeEventRepository;
 
-    // Needed for route planning of START trains
+    // Needed for trainrouteassignment planning of START trains
     private final RoutePlanner routePlanner;
 
 
@@ -36,14 +36,14 @@ public class RouteEventProcessor {
         this.routePlanner = routePlanner;
     }
 
-    // Processes one single route event that has not been visited before
+    // Processes one single trainrouteassignment event that has not been visited before
     @Scheduled(fixedDelay = 1000)
     private void processEvent() {
 
         final Optional<RouteEvent> existingRouteEvent
                 = this.routeEventRepository.getFirstByProcessedIsFalse();
 
-        // Only do something if there is an unprocessed route event
+        // Only do something if there is an unprocessed trainrouteassignment event
         if (existingRouteEvent.isPresent()) {
 
             final RouteEvent routeEvent = existingRouteEvent.get();
@@ -51,11 +51,11 @@ public class RouteEventProcessor {
             try {
                 final TrainTag trainTag = TrainTag.of(routeEvent.getTag());
 
-                // If the route Event is marked with a start trainTag, we need to generate a new route
+                // If the trainrouteassignment Event is marked with a start trainTag, we need to generate a new trainrouteassignment
                 // for this train
                 if (trainTag == TrainTagLiteral.START) {
 
-                    this.routePlanner.plan(routeEvent.getTrainID());
+                    this.routePlanner.plan(routeEvent.toTrain());
                 }
 
             // This event is invalid, since the trainTag of the train is not allowe
