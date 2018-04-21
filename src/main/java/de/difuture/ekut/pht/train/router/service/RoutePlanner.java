@@ -1,15 +1,18 @@
 package de.difuture.ekut.pht.train.router.service;
 
+import de.difuture.ekut.pht.lib.core.messages.TrainVisit;
 import de.difuture.ekut.pht.train.router.repository.station.Station;
 import de.difuture.ekut.pht.train.router.repository.station.StationRepository;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestination;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.messaging.Processor;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class RoutePlanner {
@@ -20,13 +23,21 @@ public class RoutePlanner {
     // Access to the Station Repository is needed to assemble the routes
     private final StationRepository stationRepository;
 
+    // Access to the Processer output to publish available routes
+    private final Processor processor;
+
+    private final Queue<Long> pendingTrainVisits;
+
     @Autowired
     public RoutePlanner(
             TrainDestinationRepository trainDestinationRepository,
-            StationRepository stationRepository) {
+            StationRepository stationRepository,
+            Processor processor) {
 
         this.trainDestinationRepository = trainDestinationRepository;
         this.stationRepository = stationRepository;
+        this.processor = processor;
+        this.pendingTrainVisits = new LinkedBlockingQueue<>();
     }
 
     /**
@@ -48,5 +59,37 @@ public class RoutePlanner {
         Collections.shuffle(enabledStations);
         TrainDestination.of(enabledStations, trainID)
             .ifPresent(this.trainDestinationRepository::save);
+    }
+
+
+
+    @Scheduled(fixedDelay = 1000)
+    private void publishTrainVisit() {
+
+        // If the queue of pending stations is empty, find all stations in the repository that
+        // need to be published via trainVisit
+        if (this.pendingTrainVisits.isEmpty()) {
+            this.trainDestinationRepository
+                    .findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse()
+                    .forEach(trainDestination -> this.pendingTrainVisits.add(trainDestination.getId()));
+        }
+
+        final Long id = this.pendingTrainVisits.poll();
+        if (id != null) {
+
+            this.trainDestinationRepository
+                    .findById(id)
+                    .filter(td -> ! td.isHasBeenVisited() && td.isCanBeVisited())
+                    .ifPresent(td -> {
+
+                        this.processor.output().send(
+                                MessageBuilder
+                                        .withPayload(new TrainVisit(
+                                                UUID.fromString(td.getTrainID()),
+                                                UUID.fromString(td.getStationID())))
+                                        .build()
+                        );
+                    });
+        }
     }
 }

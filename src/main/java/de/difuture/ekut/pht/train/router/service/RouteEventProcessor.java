@@ -26,6 +26,7 @@ public class RouteEventProcessor {
     // Needed for route planning of START trains
     private final RoutePlanner routePlanner;
 
+
     @Autowired
     public RouteEventProcessor(
             RouteEventRepository routeEventRepository,
@@ -68,10 +69,5 @@ public class RouteEventProcessor {
             routeEvent.setProcessedInstant(Instant.now());
             this.routeEventRepository.saveAndFlush(routeEvent);
         }
-    }
-
-    private void sendTrainReady() {
-
-
     }
 }

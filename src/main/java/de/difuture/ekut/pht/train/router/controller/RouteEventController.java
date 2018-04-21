@@ -4,9 +4,8 @@ import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Lukas Zimmermann
  */
 @RestController
-@EnableBinding(Sink.class)
 @RequestMapping("/routeevent")
 public class RouteEventController {
 
@@ -32,7 +30,7 @@ public class RouteEventController {
         this.routeEventRepository = routeEventRepository;
     }
 
-    @StreamListener(target=Sink.INPUT)
+    @StreamListener(target=Processor.INPUT)
     @Transactional(
             transactionManager = "jpaTransactionManager",
             propagation = Propagation.REQUIRES_NEW)
