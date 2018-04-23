@@ -7,4 +7,6 @@ import java.util.List;
 public interface TrainDestinationRepository extends Neo4jRepository<TrainDestination, Long> {
 
     List<TrainDestination> findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse();
+
+    List<TrainDestination> findAllByTrainIDAndRouteID(String trainID, Long routeID);
 }

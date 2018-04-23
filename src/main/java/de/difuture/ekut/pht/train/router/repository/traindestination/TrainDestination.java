@@ -117,6 +117,7 @@ public class TrainDestination {
         return new TrainDestination(station.getStationID(), train.getTrainID(), routeID);
     }
 
+    // TODO Currently not used. Creates a TrainRoute automatically
     public static Optional<TrainDestination> of(
             Iterable<Station> stations,
             Train train,
