@@ -1,8 +1,9 @@
 package de.difuture.ekut.pht.train.router.repository.routeevent;
 
 
-import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
+import de.difuture.ekut.pht.lib.core.messages.TrainUpdate;
 import de.difuture.ekut.pht.lib.core.model.Train;
+import de.difuture.ekut.pht.lib.core.traintag.TrainTag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 /**
  * Model of all events that are received by the Train Controller.
- * Currently, these are mapped from TrainAvailable messages
+ * Currently, these are mapped from TrainUpdate messages
  *
  * @author Lukas Zimmermann
  */
@@ -33,7 +34,7 @@ public class RouteEvent {
     private Long id;
 
     // Repository trainTag that the new image was checked in with
-    private String tag;
+    private TrainTag tag;
 
     // TrainID that this train belongs to
     private UUID trainID;
@@ -47,11 +48,11 @@ public class RouteEvent {
     // When this event has been visited
     private Instant processedInstant;
 
-    public RouteEvent(final TrainAvailable trainAvailable) {
+    public RouteEvent(final TrainUpdate trainUpdate) {
 
-        this.trainID = trainAvailable.getTrainID();
-        this.dockerRegistryURI = trainAvailable.getTrainRegistryURI();
-        this.tag = trainAvailable.getTrainTag();
+        this.trainID = trainUpdate.getTrainID();
+        this.dockerRegistryURI = trainUpdate.getTrainRegistryURI();
+        this.tag = trainUpdate.getTrainTag();
         this.processed = false;
     }
 

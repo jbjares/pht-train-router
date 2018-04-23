@@ -1,6 +1,6 @@
 package de.difuture.ekut.pht.train.router.controller;
 
-import de.difuture.ekut.pht.lib.core.messages.TrainAvailable;
+import de.difuture.ekut.pht.lib.core.messages.TrainUpdate;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +34,11 @@ public class RouteEventController {
     @Transactional(
             transactionManager = "jpaTransactionManager",
             propagation = Propagation.REQUIRES_NEW)
-    public void sink(TrainAvailable trainAvailable) {
+    public void sink(TrainUpdate trainUpdate) {
 
-        // Save the trainAvailable message as RouteEvent
+        // Save the trainUpdate message as RouteEvent
         this.routeEventRepository.saveAndFlush(
-                new RouteEvent(trainAvailable)
+                new RouteEvent(trainUpdate)
         );
     }
 
