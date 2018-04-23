@@ -22,18 +22,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
- * Component scans events happening on the trainrouteassignment and
+ * Component scans events happening on the trainroutes and
  *
  */
 @Component
 public class RouteEventProcessor {
 
-    // Needed for fetching unprocessed trainrouteassignment events
+    // Needed for fetching unprocessed trainroutes events
     private final RouteEventRepository routeEventRepository;
 
     private final TrainDestinationRepository trainDestinationRepository;
 
-    // Needed for trainrouteassignment planning of START trains
+    // Needed for trainroutes planning of START trains
     private final StationClient stationClient;
 
     private final Processor processor;
@@ -56,14 +56,14 @@ public class RouteEventProcessor {
         this.pendingTrainVisits = new LinkedBlockingQueue<>();
     }
 
-    // Processes one single trainrouteassignment event that has not been visited before
+    // Processes one single trainroutes event that has not been visited before
     @Scheduled(fixedDelay = 1000)
     private void processEvent() {
 
         final Optional<RouteEvent> existingRouteEvent
                 = this.routeEventRepository.getFirstByProcessedIsFalse();
 
-        // Only do something if there is an unprocessed trainrouteassignment event
+        // Only do something if there is an unprocessed trainroutes event
         if (existingRouteEvent.isPresent()) {
 
             final RouteEvent routeEvent = existingRouteEvent.get();
@@ -74,7 +74,7 @@ public class RouteEventProcessor {
                 // be updated in the routes
                 final TrainTag trainTag = routeEvent.getTag();
 
-                // If the trainrouteassignment Event is marked with a start trainTag, we need to generate a new trainrouteassignment
+                // If the trainroutes Event is marked with a start trainTag, we need to generate a new trainroutes
                 // for this train
 //                if (trainTag == TrainTagLiteral.START) {
 //
@@ -118,7 +118,7 @@ public class RouteEventProcessor {
                                 MessageBuilder
                                         .withPayload(new TrainVisit(
                                                 UUID.fromString(td.getTrainID()),
-                                                URI.create(td.getTrainDockerRegistryURI()),
+                                                URI.create("UNKNOWN"),  // TODO RouteController needs to be client of TrainOffice
                                                 UUID.fromString(td.getStationID())))
                                         .build()
                         );

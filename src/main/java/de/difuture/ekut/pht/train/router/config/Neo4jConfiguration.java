@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(
         basePackages = {
                 "de.difuture.ekut.pht.train.router.repository.routeevent",
-                "de.difuture.ekut.pht.train.router.repository.station"},
+                "de.difuture.ekut.pht.train.router.repository.trainroutes"},
         transactionManagerRef = "jpaTransactionManager")
 @EnableTransactionManagement
 public class Neo4jConfiguration {

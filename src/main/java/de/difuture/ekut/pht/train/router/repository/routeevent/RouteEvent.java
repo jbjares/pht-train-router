@@ -8,10 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.UUID;
@@ -34,6 +31,7 @@ public class RouteEvent {
     private Long id;
 
     // Repository trainTag that the new image was checked in with
+    @Convert(converter = TrainTagConverter.class)
     private TrainTag tag;
 
     // TrainID that this train belongs to

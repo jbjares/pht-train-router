@@ -12,11 +12,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
- *  A train destination consists of a station and the trainID the
- *  trainDestination is associated with.
+ *  A TrainDestination is a node in a route for a particular train.
+ *  It consists of the following attributes
+ *
+ *  * id. The internal ID for the Neo4j Persistence
+ *  * routeID. The id of the route that this node belongs to. NodeIDs are train specific.
+ *  * stationID. The ID of the station that this node addresses.
+ *  * trainID. The ID of the train that this node belongs to
+ *  * trainDockerRegistryURI the URI of the DockerTrainRegistry that this train belongs to
  *
  * @author Lukas Zimmermann
  */
@@ -30,18 +37,15 @@ public class TrainDestination {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    // Id of the trainrouteassignment that this node belongs to
+    // Id of the trainroutes that this node belongs to
     private Long routeID;
 
     // Tag that the station has been assigned with, must be an UUID. This is the same as
     // the Tag of the Docker Image
     private String stationID;
 
-    // Id of the train that is associated with this trainrouteassignment
+    // Id of the train that is associated with this trainroutes
     private String trainID;
-
-    // The trainRegistry this train belongs to
-    private String trainDockerRegistryURI;
 
     @Relationship(type = "IS_PARENT_OF")
     private List<TrainDestination> children;
@@ -55,24 +59,63 @@ public class TrainDestination {
     // Whether the station is ready to be visited
     private boolean canBeVisited;
 
-    private TrainDestination(UUID stationID, Train train, Long routeID) {
+    private TrainDestination(
+            final UUID stationID,
+            final UUID trainID,
+            final Long routeID) {
 
         this.stationID = stationID.toString();
-        this.trainID = train.getTrainID().toString();
-        this.trainDockerRegistryURI = train.getTrainRegistryURI().toString();
+        this.trainID = trainID.toString();
         this.routeID = routeID;
+        this.children = new ArrayList<>();
+        this.parents = new ArrayList<>();
         this.canBeVisited = false;
         this.hasBeenVisited = false;
     }
 
-    private static TrainDestination of(
+    public static TrainDestination of(UUID stationID, UUID trainID, Long routeID) {
+
+        return new TrainDestination(stationID, trainID, routeID);
+    }
+
+    /**
+     *
+     * Establishes IS_PARENT_OF and IS_CHILD_OF relationship between the two provided train destinations.
+     * This method will not have any effect if the relationship between parent and child already exists.
+     *
+     * @param parent The parent of the new relationship
+     *
+     * @param child The child of the new relationship
+     */
+    public static void link(final TrainDestination parent, final TrainDestination child) {
+
+        final List<TrainDestination> children = parent.getChildren();
+        final List<TrainDestination> parents = child.getParents();
+
+        final Set<String> childrenIDs = children.stream().map(TrainDestination::getStationID).collect(Collectors.toSet());
+        final Set<String> parentIDs = parents.stream().map(TrainDestination::getStationID).collect(Collectors.toSet());
+
+        if ( ! childrenIDs.contains(child.getId())) {
+
+            children.add(child);
+            parent.setChildren(children);
+        }
+
+        if ( ! parentIDs.contains(parent.getId())) {
+
+            parents.add(parent);
+            child.setParents(parents);
+        }
+    }
+
+
+    public static TrainDestination of(
             Station station,
             Train train,
             Long routeID) {
 
-        return new TrainDestination(station.getStationID(), train, routeID);
+        return new TrainDestination(station.getStationID(), train.getTrainID(), routeID);
     }
-
 
     public static Optional<TrainDestination> of(
             Iterable<Station> stations,

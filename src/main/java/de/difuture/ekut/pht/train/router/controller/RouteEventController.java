@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * Provides the handlers for the /routeevent trainrouteassignment
+ * Provides the handlers for the /routeevent trainroutes
  *
  * @author Lukas Zimmermann
  */
