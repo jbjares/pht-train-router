@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.function.Function;
 
 @CrossOrigin
 @RestController
@@ -70,29 +71,29 @@ public class TrainController {
     private void createTrainDestination(UUID trainID, Route route) {
 
         final Long newRouteID = this.addNextRoute(trainID);
-
         // Each Node in the route belongs to one trainDestination
         final Map<Route.Node, TrainDestination> trainDestinations = new HashMap<>();
 
-        for (final Route.Edge edge : route.getEdges()) {
+        // Define how to convert Route.Node to TrainDestination
+        final Function<Route.Node, TrainDestination> convert = (node) ->
+
+            trainDestinations.computeIfAbsent(node, (sourceNode) ->
+
+                            TrainDestination.of(sourceNode.getStationID(), trainID, newRouteID)
+            );
+
+        // Link nodes in edges
+        route.getEdges().forEach((edge) ->
 
             TrainDestination.link(
+                    convert.apply(edge.getSource()),
+                    convert.apply(edge.getTarget()))
+        );
+        route.getNodes().forEach(convert::apply);
 
-                    // Source TrainDestination (Parent)
-                    trainDestinations.computeIfAbsent(edge.getSource(), (sourceNode) ->
-
-                                    TrainDestination.of(sourceNode.getId(), trainID, newRouteID)
-
-                            // Target TrainDestination (Child)
-                    ),      trainDestinations.computeIfAbsent(edge.getTarget(), (targetNode) ->
-
-                            TrainDestination.of(targetNode.getId(), trainID, newRouteID)
-                    ));
-        }
         // Go through all TrainDestinations again and mark the ones with no incoming
         // edges (so the ones whose parent list is empty) that the TrainDestination
         // is ready to be processed
-
         // We need to save all root nodes. Note that a route does not
         // Necessarily need to be connected
         for (final TrainDestination trainDestination: trainDestinations.values()) {
@@ -118,10 +119,11 @@ public class TrainController {
 
                     multiplicities.values().stream().mapToInt(Integer::valueOf).max().orElse(0) + 1
             );
-            final Map<String, String> metavalues = new HashMap<>();
-            metavalues.put("ID", trainDestination.getId().toString());
 
-            return new Route.Node(UUID.fromString(trainDestination.getStationID()), multiplicity, metavalues);
+            return new Route.Node(
+                    trainDestinationID,
+                    UUID.fromString(trainDestination.getStationID()),
+                    multiplicity);
         });
     }
 
@@ -155,13 +157,10 @@ public class TrainController {
     @RequestMapping(value = "/{trainID}/{routeID}", method = RequestMethod.GET)
     public Route getRoute(@PathVariable UUID trainID, @PathVariable Long routeID) {
 
-        System.out.println("TRAINID is: " + trainID);
-        System.out.println("RouteID is: " + routeID);
 
         final List<TrainDestination> trainDestinations = this.trainDestinationRepository
                 .findAllByTrainIDAndRouteID(trainID.toString(), routeID);
 
-        System.out.println("THE ROUTE CONSISTS OF: " + trainDestinations.size() + " nodes");
         final Map<Multiplicity, Integer> multiplicities = new HashMap<>();
         final Map<Long, Route.Node> nodes = new HashMap<>();
 
@@ -170,10 +169,8 @@ public class TrainController {
 
         for (final TrainDestination trainDestination : trainDestinations) {
 
-            System.out.println("PROCESSING: " + trainDestination);
             // Collect the nodes for this train destination, parents, and children
             final Route.Node head = convertToNode(trainDestination, multiplicities, nodes);
-            System.out.println("HEAD CONVERTED");
 
             // Add edges for children
             final List<TrainDestination> children = trainDestination.getChildren();
@@ -196,6 +193,6 @@ public class TrainController {
                                 edgeSet.add(new Route.Edge(parent, head)));
             }
         }
-        return new Route(edgeSet);
+        return new Route(new HashSet<>(nodes.values()), edgeSet);
     }
 }
