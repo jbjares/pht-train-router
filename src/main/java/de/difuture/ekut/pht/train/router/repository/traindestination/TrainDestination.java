@@ -3,7 +3,6 @@ package de.difuture.ekut.pht.train.router.repository.traindestination;
 import de.difuture.ekut.pht.lib.core.model.Station;
 import de.difuture.ekut.pht.lib.core.model.Train;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 @NodeEntity
 @Setter
 @Getter
-@NoArgsConstructor
 public class TrainDestination {
 
     @Id
@@ -53,11 +51,21 @@ public class TrainDestination {
     @Relationship(type = "IS_CHILD_OF")
     private List<TrainDestination> parents;
 
+    // Whether this TrainDestination is a Root node.
+    // A root node does not contain parents
+    private boolean isRoot;
+
     // Whether the station has reported to have this train visited
     private boolean hasBeenVisited;
 
     // Whether the station is ready to be visited
     private boolean canBeVisited;
+
+    public TrainDestination() {
+
+        this.parents = new ArrayList<>();
+        this.children = new ArrayList<>();
+    }
 
     private TrainDestination(
             final UUID stationID,
@@ -71,6 +79,7 @@ public class TrainDestination {
         this.parents = new ArrayList<>();
         this.canBeVisited = false;
         this.hasBeenVisited = false;
+        this.isRoot = false;
     }
 
     public static TrainDestination of(UUID stationID, UUID trainID, Long routeID) {

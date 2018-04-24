@@ -3,7 +3,9 @@ package de.difuture.ekut.pht.train.router.service;
 import de.difuture.ekut.pht.lib.core.messages.TrainVisit;
 import de.difuture.ekut.pht.lib.core.traintag.InvalidTrainTagException;
 import de.difuture.ekut.pht.lib.core.traintag.TrainTag;
+import de.difuture.ekut.pht.lib.core.traintag.TrainTagLiteral;
 import de.difuture.ekut.pht.train.router.client.StationOfficeClient;
+import de.difuture.ekut.pht.train.router.client.TrainOfficeClient;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
@@ -35,6 +37,7 @@ public class RouteEventProcessor {
 
     // Needed for trainroutes planning of START trains
     private final StationOfficeClient stationOfficeClient;
+    private final TrainOfficeClient trainOfficeClient;
 
     private final Processor processor;
 
@@ -46,11 +49,13 @@ public class RouteEventProcessor {
             RouteEventRepository routeEventRepository,
             TrainDestinationRepository trainDestinationRepository,
             StationOfficeClient stationOfficeClient,
+            TrainOfficeClient trainOfficeClient,
             Processor processor) {
 
         this.routeEventRepository = routeEventRepository;
         this.trainDestinationRepository = trainDestinationRepository;
         this.stationOfficeClient = stationOfficeClient;
+        this.trainOfficeClient = trainOfficeClient;
         this.processor = processor;
 
         this.pendingTrainVisits = new LinkedBlockingQueue<>();
@@ -76,10 +81,17 @@ public class RouteEventProcessor {
 
                 // If the trainroutes Event is marked with a start trainTag, we need to generate a new trainroutes
                 // for this train
-//                if (trainTag == TrainTagLiteral.START) {
-//
-//                    this.routePlanner.plan(routeEvent.toTrain());
-//                }
+                if (trainTag == TrainTagLiteral.START) {
+
+                    // Route nodes of this train can now be visited
+                    this.trainDestinationRepository
+                            .findAllByTrainIDAndRootIsTrue(
+                                    routeEvent.getTrainID().toString()).forEach(trainDestination -> {
+
+                                        trainDestination.setCanBeVisited(true);
+                                        this.trainDestinationRepository.save(trainDestination);
+                    });
+                }
 
             // This event is invalid, since the trainTag of the train is not allowe
             } catch (InvalidTrainTagException e) {
@@ -93,6 +105,13 @@ public class RouteEventProcessor {
             this.routeEventRepository.saveAndFlush(routeEvent);
         }
     }
+
+
+    private void checkTrainOfficeForAvailability() {
+
+
+    }
+
 
 
     @Scheduled(fixedDelay = 1000)
@@ -119,7 +138,8 @@ public class RouteEventProcessor {
                                         .withPayload(new TrainVisit(
                                                 UUID.fromString(td.getTrainID()),
                                                 URI.create("UNKNOWN"),  // TODO RouteController needs to be client of TrainOffice
-                                                UUID.fromString(td.getStationID())))
+                                                UUID.fromString(td.getStationID()),
+                                                td.getRouteID()))
                                         .build()
                         );
                     });

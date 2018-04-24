@@ -88,22 +88,18 @@ public class TrainController {
         );
         route.getNodes().forEach(convert::apply);
 
-        // Go through all TrainDestinations again and mark the ones with no incoming
-        // edges (so the ones whose parent list is empty) that the TrainDestination
-        // is ready to be processed
         // We need to save all root nodes. Note that a route does not
         // Necessarily need to be connected
-        for (final TrainDestination trainDestination: trainDestinations.values()) {
+        trainDestinations.values().forEach(trainDestination -> {
 
-            // If it does not have parents, it is a root node and we need to save it
             if (trainDestination.getParents().isEmpty()) {
 
-                trainDestination.setCanBeVisited(true);
+                // A node without parents is a root node
+                trainDestination.setRoot(true);
                 this.trainDestinationRepository.save(trainDestination);
             }
-        }
+        });
     }
-
 
     private Route.Node convertToNode(
             TrainDestination trainDestination,
