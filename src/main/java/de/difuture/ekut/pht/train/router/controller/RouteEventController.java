@@ -6,6 +6,7 @@ import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,8 @@ public class RouteEventController {
             transactionManager = "jpaTransactionManager",
             propagation = Propagation.REQUIRES_NEW)
     public void sink(TrainUpdate trainUpdate) {
+
+        System.out.println("ROUTE_EVENT_CONTROLLER HAS RECEIVED TRAIN UPDATE");
 
         // Save the trainUpdate message as RouteEvent
         this.routeEventRepository.saveAndFlush(

@@ -13,4 +13,10 @@ public interface TrainDestinationRepository extends Neo4jRepository<TrainDestina
     List<TrainDestination> findAllByTrainID(String trainID);
 
     List<TrainDestination> findAllByTrainIDAndRootIsTrue(String trainID);
+
+    /**
+     * These nodes can be processed, because these nodes are Root nodes.
+     * But the train is not available.
+     */
+    List<TrainDestination> findAllByRootIsTrueAndCanBeVisitedIsFalse();
 }

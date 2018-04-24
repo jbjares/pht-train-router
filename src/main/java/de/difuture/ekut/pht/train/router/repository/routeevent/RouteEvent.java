@@ -50,7 +50,7 @@ public class RouteEvent {
 
         this.trainID = trainUpdate.getTrainID();
         this.dockerRegistryURI = trainUpdate.getTrainRegistryURI();
-        this.tag = trainUpdate.getTrainTag();
+        this.tag = TrainTag.of(trainUpdate.getTrainTag());
         this.processed = false;
     }
 

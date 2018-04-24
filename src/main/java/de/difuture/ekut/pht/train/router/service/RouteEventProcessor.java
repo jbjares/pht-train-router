@@ -61,9 +61,32 @@ public class RouteEventProcessor {
         this.pendingTrainVisits = new LinkedBlockingQueue<>();
     }
 
+
+    private void checkTrains() {
+
+        // Find all trains that are Root and that can not yet be published
+        this.trainDestinationRepository
+                .findAllByRootIsTrueAndCanBeVisitedIsFalse()
+                .forEach(trainDestination -> {
+
+                    // Get the train from the TrainOfficeClient
+                    this.trainOfficeClient
+                            .getTrain(UUID.fromString(trainDestination.getTrainID()))
+                            .filter(train -> train.getTrainRegistryURI() != null)
+                            .ifPresent(train -> {
+
+                                trainDestination.setCanBeVisited(true);
+                                this.trainDestinationRepository.save(trainDestination);
+                            });
+                });
+    }
+
+
     // Processes one single trainroutes event that has not been visited before
     @Scheduled(fixedDelay = 1000)
-    private void processEvent() {
+    private void processRouteEvents() {
+
+        this.checkTrains();
 
         final Optional<RouteEvent> existingRouteEvent
                 = this.routeEventRepository.getFirstByProcessedIsFalse();
@@ -104,12 +127,6 @@ public class RouteEventProcessor {
             routeEvent.setProcessedInstant(Instant.now());
             this.routeEventRepository.saveAndFlush(routeEvent);
         }
-    }
-
-
-    private void checkTrainOfficeForAvailability() {
-
-
     }
 
 

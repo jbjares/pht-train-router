@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +16,7 @@ public interface TrainOfficeClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/train/{trainID}")
     Optional<Train> getTrain(@PathVariable UUID trainID);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/train")
+    List<Train> getTrains();
 }
