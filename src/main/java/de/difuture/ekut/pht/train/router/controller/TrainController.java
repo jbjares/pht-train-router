@@ -2,16 +2,16 @@ package de.difuture.ekut.pht.train.router.controller;
 
 
 import de.difuture.ekut.pht.lib.core.model.Route;
+import de.difuture.ekut.pht.train.router.api.TrainRoutes;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestination;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
-import de.difuture.ekut.pht.train.router.repository.trainroutes.TrainRoutes;
-import de.difuture.ekut.pht.train.router.repository.trainroutes.TrainRoutesRepository;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -29,35 +29,26 @@ public class TrainController {
             return new Multiplicity(UUID.fromString(trainDestination.getStationID()), trainDestination.getId());
         }
     }
-
-
-    private final TrainRoutesRepository trainRoutesRepository;
     private final TrainDestinationRepository trainDestinationRepository;
 
     @Autowired
-    public TrainController(TrainRoutesRepository trainRoutesRepository,
-                           TrainDestinationRepository trainDestinationRepository) {
+    public TrainController(TrainDestinationRepository trainDestinationRepository) {
 
         this.trainDestinationRepository = trainDestinationRepository;
-        this.trainRoutesRepository = trainRoutesRepository;
     }
 
 
     /**
-     * Adds next route to the list of routes, returns the new route Number.
+     * Finds all routes associated with a particular train
+     * @return
      */
-    private Long addNextRoute(final UUID trainID) {
+    private List<Long> getTrainRoutes(final UUID trainID) {
 
-        // Assign a new trainRoute number for this route and save to repository
-        final TrainRoutes trainRoutes = this.trainRoutesRepository
-                .findById(trainID)
-                .orElse(new TrainRoutes(trainID));
-        final List<Long> routes = trainRoutes.getRoutes();
-        final Long nextRoute = routes.stream().mapToLong(Long::valueOf).max().orElse(0) + 1;
-        routes.add(nextRoute);
-        trainRoutes.setRoutes(routes);
-        this.trainRoutesRepository.saveAndFlush(trainRoutes);
-        return nextRoute;
+        return this.trainDestinationRepository
+                .findAllByTrainID(trainID.toString())
+                .stream()
+                .map(TrainDestination::getId)
+                .collect(Collectors.toList());
     }
 
 
@@ -70,7 +61,13 @@ public class TrainController {
      */
     private void createTrainDestination(UUID trainID, Route route) {
 
-        final Long newRouteID = this.addNextRoute(trainID);
+        // Figure out next RouteID for this train
+        final Long nextRouteID = getTrainRoutes(trainID)
+                .stream()
+                .mapToLong(Long::valueOf)
+                .max()
+                .orElse(1L);
+
         // Each Node in the route belongs to one trainDestination
         final Map<Route.Node, TrainDestination> trainDestinations = new HashMap<>();
 
@@ -79,7 +76,7 @@ public class TrainController {
 
             trainDestinations.computeIfAbsent(node, (sourceNode) ->
 
-                            TrainDestination.of(sourceNode.getStationID(), trainID, newRouteID)
+                            TrainDestination.of(sourceNode.getStationID(), trainID, nextRouteID)
             );
 
         // Link nodes in edges
@@ -145,9 +142,22 @@ public class TrainController {
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public Iterable<TrainRoutes> getAllTrainRoutes() {
 
-        return this.trainRoutesRepository.findAll();
-    }
+        final Map<UUID, Set<Long>> trainRoutes = new HashMap<>();
+        this.trainDestinationRepository.findAll().forEach(trainDestination ->
 
+            trainRoutes.compute(UUID.fromString(trainDestination.getTrainID()),
+                    (trainID, previousRoutes) -> {
+
+                        final Set<Long> result
+                                = previousRoutes == null ? new HashSet<>() : previousRoutes;
+                        result.add(trainDestination.getId());
+                        return result;
+                    })
+        );
+        return trainRoutes.entrySet().stream().map((entry) ->
+            new TrainRoutes(entry.getKey(), entry.getValue())
+        ).collect(Collectors.toList());
+    }
 
     /**
      * Fetches particular route

@@ -9,4 +9,6 @@ public interface TrainDestinationRepository extends Neo4jRepository<TrainDestina
     List<TrainDestination> findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse();
 
     List<TrainDestination> findAllByTrainIDAndRouteID(String trainID, Long routeID);
+
+    List<TrainDestination> findAllByTrainID(String trainID);
 }
