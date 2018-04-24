@@ -3,7 +3,7 @@ package de.difuture.ekut.pht.train.router.service;
 import de.difuture.ekut.pht.lib.core.messages.TrainVisit;
 import de.difuture.ekut.pht.lib.core.traintag.InvalidTrainTagException;
 import de.difuture.ekut.pht.lib.core.traintag.TrainTag;
-import de.difuture.ekut.pht.train.router.client.StationClient;
+import de.difuture.ekut.pht.train.router.client.StationOfficeClient;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
 import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
 import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
@@ -34,7 +34,7 @@ public class RouteEventProcessor {
     private final TrainDestinationRepository trainDestinationRepository;
 
     // Needed for trainroutes planning of START trains
-    private final StationClient stationClient;
+    private final StationOfficeClient stationOfficeClient;
 
     private final Processor processor;
 
@@ -45,12 +45,12 @@ public class RouteEventProcessor {
     public RouteEventProcessor(
             RouteEventRepository routeEventRepository,
             TrainDestinationRepository trainDestinationRepository,
-            StationClient stationClient,
+            StationOfficeClient stationOfficeClient,
             Processor processor) {
 
         this.routeEventRepository = routeEventRepository;
         this.trainDestinationRepository = trainDestinationRepository;
-        this.stationClient = stationClient;
+        this.stationOfficeClient = stationOfficeClient;
         this.processor = processor;
 
         this.pendingTrainVisits = new LinkedBlockingQueue<>();

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.List;
 
 @FeignClient("station-office")
-public interface StationClient {
+public interface StationOfficeClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/station")
     List<Station> getStations();

@@ -150,7 +150,7 @@ public class TrainController {
 
                         final Set<Long> result
                                 = previousRoutes == null ? new HashSet<>() : previousRoutes;
-                        result.add(trainDestination.getId());
+                        result.add(trainDestination.getRouteID());
                         return result;
                     })
         );
