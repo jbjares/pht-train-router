@@ -2,9 +2,6 @@ server:
   port: 6004
 
 spring:
-  h2:
-    console:
-      enabled: true
   application:
     name: train-router
   cloud:
@@ -40,19 +37,14 @@ eureka:
 ---
 
 spring:
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-  profiles: docker
+  profiles: denbi
   application:
     name: train-router
   cloud:
     stream:
       kafka:
         binder:
-          brokers: kafka:9092              
+          brokers: 193.196.20.95:9092
           #    config:
           #      discovery:
           #        enabled: true
@@ -80,4 +72,4 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-            defaultZone: http://eureka-server:8761/eureka/
+            defaultZone: http://193.196.20.86:8761/eureka/

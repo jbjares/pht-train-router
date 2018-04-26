@@ -1,7 +1,7 @@
 package de.difuture.ekut.pht.train.router.client;
 
 
-import de.difuture.ekut.pht.lib.core.model.Train;
+import de.difuture.ekut.pht.lib.core.api.Train;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

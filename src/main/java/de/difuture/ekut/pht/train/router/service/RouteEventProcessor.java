@@ -1,23 +1,16 @@
 package de.difuture.ekut.pht.train.router.service;
 
-import de.difuture.ekut.pht.lib.core.messages.TrainVisit;
-import de.difuture.ekut.pht.lib.core.traintag.InvalidTrainTagException;
-import de.difuture.ekut.pht.lib.core.traintag.TrainTag;
-import de.difuture.ekut.pht.lib.core.traintag.TrainTagLiteral;
+
 import de.difuture.ekut.pht.train.router.client.StationOfficeClient;
 import de.difuture.ekut.pht.train.router.client.TrainOfficeClient;
-import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEvent;
-import de.difuture.ekut.pht.train.router.repository.routeevent.RouteEventRepository;
-import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
+import de.difuture.ekut.pht.train.router.repository.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,9 +20,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Component scans events happening on the trainroutes and
  *
  */
-@Component
+//@Component
 public class RouteEventProcessor {
 
+    /*
     // Needed for fetching unprocessed trainroutes events
     private final RouteEventRepository routeEventRepository;
 
@@ -76,6 +70,7 @@ public class RouteEventProcessor {
                             .ifPresent(train -> {
 
                                 trainDestination.setCanBeVisited(true);
+                                trainDestination.setDockerRegistryURI(train.getTrainRegistryURI());
                                 this.trainDestinationRepository.save(trainDestination);
                             });
                 });
@@ -112,6 +107,7 @@ public class RouteEventProcessor {
                                     routeEvent.getTrainID().toString()).forEach(trainDestination -> {
 
                                         trainDestination.setCanBeVisited(true);
+                                        trainDestination.setDockerRegistryURI(routeEvent.getDockerRegistryURI());
                                         this.trainDestinationRepository.save(trainDestination);
                     });
                 }
@@ -150,11 +146,13 @@ public class RouteEventProcessor {
                     .filter(td -> ! td.isHasBeenVisited() && td.isCanBeVisited())
                     .ifPresent(td -> {
 
+                        // Get the train from the
+
                         this.processor.output().send(
                                 MessageBuilder
                                         .withPayload(new TrainVisit(
                                                 UUID.fromString(td.getTrainID()),
-                                                URI.create("UNKNOWN"),  // TODO RouteController needs to be client of TrainOffice
+                                                td.getDockerRegistryURI(),
                                                 UUID.fromString(td.getStationID()),
                                                 td.getRouteID()))
                                         .build()
@@ -162,4 +160,5 @@ public class RouteEventProcessor {
                     });
         }
     }
+    */
 }

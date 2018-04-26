@@ -1,23 +1,22 @@
 package de.difuture.ekut.pht.train.router.controller;
 
 
-import de.difuture.ekut.pht.lib.core.model.Route;
-import de.difuture.ekut.pht.train.router.api.TrainRoutes;
-import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestination;
-import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
-import lombok.Value;
+import de.difuture.ekut.pht.lib.core.api.Route;
+import de.difuture.ekut.pht.lib.core.neo4j.entity.RouteEntity;
+import de.difuture.ekut.pht.lib.core.neo4j.entity.TrainEntity;
+import de.difuture.ekut.pht.train.router.repository.RouteEntityRepository;
+import de.difuture.ekut.pht.train.router.repository.TrainDestinationRepository;
+import de.difuture.ekut.pht.train.router.repository.TrainEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/train")
 public class TrainController {
 
+    /*
     @Value
     private static final class Multiplicity {
 
@@ -29,45 +28,38 @@ public class TrainController {
             return new Multiplicity(UUID.fromString(trainDestination.getStationID()), trainDestination.getId());
         }
     }
+    */
+
     private final TrainDestinationRepository trainDestinationRepository;
+    private final TrainEntityRepository trainEntityRepository;
+    private final RouteEntityRepository routeEntityRepository;
 
     @Autowired
-    public TrainController(TrainDestinationRepository trainDestinationRepository) {
+    public TrainController(
+            TrainDestinationRepository trainDestinationRepository,
+            TrainEntityRepository trainEntityRepository,
+            RouteEntityRepository routeEntityRepository) {
 
         this.trainDestinationRepository = trainDestinationRepository;
-    }
-
-
-    /**
-     * Finds all routes associated with a particular train
-     * @return
-     */
-    private List<Long> getTrainRoutes(final UUID trainID) {
-
-        return this.trainDestinationRepository
-                .findAllByTrainID(trainID.toString())
-                .stream()
-                .map(TrainDestination::getId)
-                .collect(Collectors.toList());
+        this.trainEntityRepository = trainEntityRepository;
+        this.routeEntityRepository = routeEntityRepository;
     }
 
 
     /**
      * Creates a new TrainDestination for the Train with the given ID and the
-     * provided route model
+     * provided route api
      *
-     * @param trainID UUID of the train for which the TrainDestination should be generated
-     * @param route The Route model for the newly created TrainDestination
+     * @param trainEntity UUID of the train for which the TrainDestination should be generated
+     * @param route The Route api for the newly created TrainDestination
      */
-    private void createTrainDestination(UUID trainID, Route route) {
+    private void createRoute(TrainEntity trainEntity, Route route) {
 
-        // Figure out next RouteID for this train
-        final Long nextRouteID = getTrainRoutes(trainID)
-                .stream()
-                .mapToLong(Long::valueOf)
-                .max()
-                .orElse(1L);
+        // Create a new RouteEntity Node
+        final RouteEntity routeEntity = new RouteEntity(trainEntity);
+        trainEntity.getRoutes().add(routeEntity);
 
+        /*
         // Each Node in the route belongs to one trainDestination
         final Map<Route.Node, TrainDestination> trainDestinations = new HashMap<>();
 
@@ -98,9 +90,12 @@ public class TrainController {
                 trainDestination.setRoot(true);
                 this.trainDestinationRepository.save(trainDestination);
             }
-        });
+        });*/
+        this.routeEntityRepository.save(routeEntity);
+        this.trainEntityRepository.save(trainEntity);
     }
 
+    /*
     private Route.Node convertToNode(
             TrainDestination trainDestination,
             Map<Multiplicity, Integer> multiplicities,
@@ -119,22 +114,24 @@ public class TrainController {
                     multiplicity);
         });
     }
+    */
 
 
     /**
-     * Adds a new route to the train with the provided trainID
+     * Adds a new route to the train with the provided trainID.
      */
     @RequestMapping(value = "/{trainID}", method = RequestMethod.POST, consumes = "application/json")
-    public void addRoute(@PathVariable UUID trainID, @RequestBody Route route) {
+    public void addRoute(@PathVariable Long trainID, @RequestBody Route route) {
 
-        // TODO Verify that the route is valid, so it is a DAG and does not contain
-        // TODO circles
-        this.createTrainDestination(trainID, route);
+        // Adds a new Route to the train
+        this.trainEntityRepository.findById(trainID)
+                .ifPresent(trainEntity -> this.createRoute(trainEntity, route));
     }
 
     /**
      * Adds a new route to the train with the provided trainID
      */
+    /*
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public Iterable<TrainRoutes> getAllTrainRoutes() {
 
@@ -154,12 +151,13 @@ public class TrainController {
             new TrainRoutes(entry.getKey(), entry.getValue())
         ).collect(Collectors.toList());
     }
-
+    */
     /**
      * Fetches particular route
      *
      */
 
+    /*
     @RequestMapping(value = "/{trainID}/{routeID}", method = RequestMethod.GET)
     public Route getRoute(@PathVariable UUID trainID, @PathVariable Long routeID) {
 
@@ -201,4 +199,5 @@ public class TrainController {
         }
         return new Route(new HashSet<>(nodes.values()), edgeSet);
     }
+    */
 }

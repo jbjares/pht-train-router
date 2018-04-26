@@ -1,16 +1,11 @@
 package de.difuture.ekut.pht.train.router.controller;
 
 
-import de.difuture.ekut.pht.train.router.api.NodeInfo;
 import de.difuture.ekut.pht.train.router.client.StationOfficeClient;
-import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestination;
-import de.difuture.ekut.pht.train.router.repository.traindestination.TrainDestinationRepository;
+import de.difuture.ekut.pht.train.router.repository.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 @CrossOrigin
@@ -30,6 +25,7 @@ public class TrainDestinationController {
         this.stationOfficeClient = stationOfficeClient;
     }
 
+    /*
     @RequestMapping(
             method = RequestMethod.GET,
             produces = "application/json")
@@ -63,4 +59,5 @@ public class TrainDestinationController {
 
                 })).collect(Collectors.toList());
     }
+    */
 }
