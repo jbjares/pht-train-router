@@ -1,7 +1,6 @@
 package de.difuture.ekut.pht.train.router.controller;
 
 
-import de.difuture.ekut.pht.train.router.client.StationOfficeClient;
 import de.difuture.ekut.pht.train.router.repository.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class TrainDestinationController {
 
     private final TrainDestinationRepository trainDestinationRepository;
-    private final StationOfficeClient stationOfficeClient;
 
     @Autowired
     public TrainDestinationController(
-            final TrainDestinationRepository trainDestinationRepository,
-            final StationOfficeClient stationOfficeClient) {
+            final TrainDestinationRepository trainDestinationRepository) {
 
         this.trainDestinationRepository = trainDestinationRepository;
-        this.stationOfficeClient = stationOfficeClient;
     }
 
     /*
@@ -30,7 +26,7 @@ public class TrainDestinationController {
             method = RequestMethod.GET,
             produces = "application/json")
     public Iterable<NodeInfo> get(
-            @RequestParam(value = "id") Set<Long> ids) {
+            @RequestParam(value = "trainDestinationID") Set<Long> ids) {
 
 
         // Get Stations if we require this information, filter for the
@@ -51,7 +47,7 @@ public class TrainDestinationController {
 
                     final UUID stationID = UUID.fromString(trainDestination.getStationID());
                     return new NodeInfo(
-                            trainDestination.getId(),
+                            trainDestination.getTrainDestinationID(),
                             stationID,
                             stationNames.getOrDefault(stationID,"unknown"),
                             trainDestination.isCanBeVisited(),

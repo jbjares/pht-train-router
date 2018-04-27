@@ -1,13 +1,10 @@
 package de.difuture.ekut.pht.train.router.controller;
 
 
-import de.difuture.ekut.pht.lib.core.api.Route;
-import de.difuture.ekut.pht.lib.core.neo4j.entity.RouteEntity;
-import de.difuture.ekut.pht.lib.core.neo4j.entity.TrainEntity;
-import de.difuture.ekut.pht.train.router.repository.RouteEntityRepository;
-import de.difuture.ekut.pht.train.router.repository.TrainDestinationRepository;
-import de.difuture.ekut.pht.train.router.repository.TrainEntityRepository;
+import de.difuture.ekut.pht.lib.core.api.APIRoute;
+import de.difuture.ekut.pht.train.router.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -15,6 +12,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/train")
 public class TrainController {
+
+    private static final ResponseEntity<?> BAD_REQUEST = ResponseEntity.badRequest().build();
+
+    private final RouteService routeService;
+
+    @Autowired
+    public TrainController(RouteService routeService) {
+
+        this.routeService = routeService;
+    }
+
 
     /*
     @Value
@@ -25,90 +33,30 @@ public class TrainController {
 
         private static Multiplicity of(final TrainDestination trainDestination) {
 
-            return new Multiplicity(UUID.fromString(trainDestination.getStationID()), trainDestination.getId());
+            return new Multiplicity(UUID.fromString(trainDestination.getStationID()), trainDestination.getTrainDestinationID());
         }
     }
     */
 
-    private final TrainDestinationRepository trainDestinationRepository;
-    private final TrainEntityRepository trainEntityRepository;
-    private final RouteEntityRepository routeEntityRepository;
-
-    @Autowired
-    public TrainController(
-            TrainDestinationRepository trainDestinationRepository,
-            TrainEntityRepository trainEntityRepository,
-            RouteEntityRepository routeEntityRepository) {
-
-        this.trainDestinationRepository = trainDestinationRepository;
-        this.trainEntityRepository = trainEntityRepository;
-        this.routeEntityRepository = routeEntityRepository;
-    }
 
 
-    /**
-     * Creates a new TrainDestination for the Train with the given ID and the
-     * provided route api
-     *
-     * @param trainEntity UUID of the train for which the TrainDestination should be generated
-     * @param route The Route api for the newly created TrainDestination
-     */
-    private void createRoute(TrainEntity trainEntity, Route route) {
 
-        // Create a new RouteEntity Node
-        final RouteEntity routeEntity = new RouteEntity(trainEntity);
-        trainEntity.getRoutes().add(routeEntity);
 
-        /*
-        // Each Node in the route belongs to one trainDestination
-        final Map<Route.Node, TrainDestination> trainDestinations = new HashMap<>();
-
-        // Define how to convert Route.Node to TrainDestination
-        final Function<Route.Node, TrainDestination> convert = (node) ->
-
-            trainDestinations.computeIfAbsent(node, (sourceNode) ->
-
-                            TrainDestination.of(sourceNode.getStationID(), trainID, nextRouteID)
-            );
-
-        // Link nodes in edges
-        route.getEdges().forEach((edge) ->
-
-            TrainDestination.link(
-                    convert.apply(edge.getSource()),
-                    convert.apply(edge.getTarget()))
-        );
-        route.getNodes().forEach(convert::apply);
-
-        // We need to save all root nodes. Note that a route does not
-        // Necessarily need to be connected
-        trainDestinations.values().forEach(trainDestination -> {
-
-            if (trainDestination.getParents().isEmpty()) {
-
-                // A node without parents is a root node
-                trainDestination.setRoot(true);
-                this.trainDestinationRepository.save(trainDestination);
-            }
-        });*/
-        this.routeEntityRepository.save(routeEntity);
-        this.trainEntityRepository.save(trainEntity);
-    }
 
     /*
-    private Route.Node convertToNode(
+    private APIRoute.Node convertToNode(
             TrainDestination trainDestination,
             Map<Multiplicity, Integer> multiplicities,
-            Map<Long, Route.Node> nodes) {
+            Map<Long, APIRoute.Node> nodes) {
 
-        return nodes.computeIfAbsent(trainDestination.getId(), (trainDestinationID) -> {
+        return nodes.computeIfAbsent(trainDestination.getTrainDestinationID(), (trainDestinationID) -> {
 
             final int multiplicity = multiplicities.computeIfAbsent(Multiplicity.of(trainDestination), (m) ->
 
                     multiplicities.values().stream().mapToInt(Integer::valueOf).max().orElse(0) + 1
             );
 
-            return new Route.Node(
+            return new APIRoute.Node(
                     trainDestinationID,
                     UUID.fromString(trainDestination.getStationID()),
                     multiplicity);
@@ -118,14 +66,18 @@ public class TrainController {
 
 
     /**
-     * Adds a new route to the train with the provided trainID.
+     * Adds a new APIRoute to the train with the provided trainID.
      */
     @RequestMapping(value = "/{trainID}", method = RequestMethod.POST, consumes = "application/json")
-    public void addRoute(@PathVariable Long trainID, @RequestBody Route route) {
+    public ResponseEntity<?> addRoute(@PathVariable Long trainID, @RequestBody APIRoute apiRoute) {
 
-        // Adds a new Route to the train
-        this.trainEntityRepository.findById(trainID)
-                .ifPresent(trainEntity -> this.createRoute(trainEntity, route));
+        // There is a node with more than one parent
+        if ( ! apiRoute.hasOneParent()) {
+
+            return BAD_REQUEST;
+        }
+        this.routeService.createRoute(trainID, apiRoute);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -159,22 +111,22 @@ public class TrainController {
 
     /*
     @RequestMapping(value = "/{trainID}/{routeID}", method = RequestMethod.GET)
-    public Route getRoute(@PathVariable UUID trainID, @PathVariable Long routeID) {
+    public APIRoute getRoute(@PathVariable UUID trainID, @PathVariable Long routeID) {
 
 
         final List<TrainDestination> trainDestinations = this.trainDestinationRepository
                 .findAllByTrainIDAndRouteID(trainID.toString(), routeID);
 
         final Map<Multiplicity, Integer> multiplicities = new HashMap<>();
-        final Map<Long, Route.Node> nodes = new HashMap<>();
+        final Map<Long, APIRoute.Node> nodes = new HashMap<>();
 
         // The edge Set
-        final Set<Route.Edge> edgeSet = new HashSet<>();
+        final Set<APIRoute.Edge> edgeSet = new HashSet<>();
 
         for (final TrainDestination trainDestination : trainDestinations) {
 
             // Collect the nodes for this train destination, parents, and children
-            final Route.Node head = convertToNode(trainDestination, multiplicities, nodes);
+            final APIRoute.Node head = convertToNode(trainDestination, multiplicities, nodes);
 
             // Add edges for children
             final List<TrainDestination> children = trainDestination.getChildren();
@@ -184,7 +136,7 @@ public class TrainController {
                         .forEach( (child) ->
 
                                 // Add a new Edge to the edge set (from head -> children)
-                                edgeSet.add(new Route.Edge(head, child)));
+                                edgeSet.add(new APIRoute.Edge(head, child)));
             }
             // Add edges for parents
             final List<TrainDestination> parents = trainDestination.getParents();
@@ -194,10 +146,10 @@ public class TrainController {
                         .forEach( (parent) ->
 
                                 // Add a new Edge to the edge set (from head -> children)
-                                edgeSet.add(new Route.Edge(parent, head)));
+                                edgeSet.add(new APIRoute.Edge(parent, head)));
             }
         }
-        return new Route(new HashSet<>(nodes.values()), edgeSet);
+        return new APIRoute(new HashSet<>(nodes.values()), edgeSet);
     }
     */
 }
