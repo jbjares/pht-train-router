@@ -37,6 +37,39 @@ public class RouteService {
         this.stationRepository = stationRepository;
     }
 
+
+    public Optional<APIRoute> getRoute(Long routeID) {
+
+        final List<TrainDestination> route = this.routeEntityRepository.getTrainDestinations(routeID);
+
+        // Keep track of the number of stationIDs encountered.
+        final Map<Long, Integer> stationIDs = new HashMap<>();
+
+        // Assign each TrainDestination ID the resective node
+        final Map<Long, APIRoute.Node> nodes = new HashMap<>();
+
+        final Function<TrainDestination, APIRoute.Node> convertToNode = (trainDestination) ->
+
+            nodes.computeIfAbsent(trainDestination.getTrainDestinationID(), (tdID) -> {
+
+                final Long stationID = trainDestination.getStation().getStationID();
+
+                final Integer m =  stationIDs.compute(stationID,
+                        (sID, number) ->
+
+                                (number == null) ? 1 : number + 1
+                );
+                return new APIRoute.Node(nodes.size() + 1L, stationID, m);
+            });
+
+        System.out.println("NODES to be retrieved " + nodes.size());
+
+        return Optional.of(new APIRoute(null, null));
+    }
+
+
+
+
     List<TrainDestination> getPendingTrainDestinations() {
 
         return this.trainDestinationRepository.findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse();

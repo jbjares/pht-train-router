@@ -27,48 +27,6 @@ public class TrainController {
         this.routeService = routeService;
     }
 
-
-    /*
-    @Value
-    private static final class Multiplicity {
-
-        UUID stationID;
-        Long trainDestinationID;
-
-        private static Multiplicity of(final TrainDestination trainDestination) {
-
-            return new Multiplicity(UUID.fromString(trainDestination.getStationID()), trainDestination.getTrainDestinationID());
-        }
-    }
-    */
-
-
-
-
-
-
-    /*
-    private APIRoute.Node convertToNode(
-            TrainDestination trainDestination,
-            Map<Multiplicity, Integer> multiplicities,
-            Map<Long, APIRoute.Node> nodes) {
-
-        return nodes.computeIfAbsent(trainDestination.getTrainDestinationID(), (trainDestinationID) -> {
-
-            final int multiplicity = multiplicities.computeIfAbsent(Multiplicity.of(trainDestination), (m) ->
-
-                    multiplicities.values().stream().mapToInt(Integer::valueOf).max().orElse(0) + 1
-            );
-
-            return new APIRoute.Node(
-                    trainDestinationID,
-                    UUID.fromString(trainDestination.getStationID()),
-                    multiplicity);
-        });
-    }
-    */
-
-
     /**
      * Adds a new APIRoute to the train with the provided trainID.
      */
@@ -98,53 +56,4 @@ public class TrainController {
         }
         return ResponseEntity.ok(results.get());
     }
-
-    /**
-     * Fetches particular route
-     *
-     */
-
-    /*
-    @RequestMapping(value = "/{trainID}/{routeID}", method = RequestMethod.GET)
-    public APIRoute getRoute(@PathVariable UUID trainID, @PathVariable Long routeID) {
-
-
-        final List<TrainDestination> trainDestinations = this.trainDestinationRepository
-                .findAllByTrainIDAndRouteID(trainID.toString(), routeID);
-
-        final Map<Multiplicity, Integer> multiplicities = new HashMap<>();
-        final Map<Long, APIRoute.Node> nodes = new HashMap<>();
-
-        // The edge Set
-        final Set<APIRoute.Edge> edgeSet = new HashSet<>();
-
-        for (final TrainDestination trainDestination : trainDestinations) {
-
-            // Collect the nodes for this train destination, parents, and children
-            final APIRoute.Node head = convertToNode(trainDestination, multiplicities, nodes);
-
-            // Add edges for children
-            final List<TrainDestination> children = trainDestination.getChildren();
-            if (children != null) {
-                children.stream()
-                        .map(x -> convertToNode(x, multiplicities, nodes))
-                        .forEach( (child) ->
-
-                                // Add a new Edge to the edge set (from head -> children)
-                                edgeSet.add(new APIRoute.Edge(head, child)));
-            }
-            // Add edges for parents
-            final List<TrainDestination> parents = trainDestination.getParents();
-            if (parents != null) {
-                parents.stream()
-                        .map(x -> convertToNode(x, multiplicities, nodes))
-                        .forEach( (parent) ->
-
-                                // Add a new Edge to the edge set (from head -> children)
-                                edgeSet.add(new APIRoute.Edge(parent, head)));
-            }
-        }
-        return new APIRoute(new HashSet<>(nodes.values()), edgeSet);
-    }
-    */
 }
