@@ -17,6 +17,6 @@ public interface RouteRepository extends Neo4jRepository<Route, Long> {
            " WITH collect(x) as parents, collect(y) as children\n" +
            " UNWIND parents + children as ids\n" +
            " RETURN collect(distinct ids)")
-    @Depth(2)
+    @Depth(3)
     List<TrainDestination> getTrainDestinations(@Param("routeID") Long routeID);
 }

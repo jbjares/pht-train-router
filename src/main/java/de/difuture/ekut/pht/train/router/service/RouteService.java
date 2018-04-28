@@ -52,9 +52,13 @@ public class RouteService {
 
             nodes.computeIfAbsent(trainDestination.getTrainDestinationID(), (tdID) -> {
 
-                final Long stationID = trainDestination.getStation().getStationID();
+                final Station station =  trainDestination.getStation();
+                System.out.println("STATION: " + station);
+                final Long stationID = station.getStationID();
+                System.out.println("STATIONID: " + stationID);
 
                 final Integer m =  stationIDs.compute(stationID,
+
                         (sID, number) ->
 
                                 (number == null) ? 1 : number + 1
