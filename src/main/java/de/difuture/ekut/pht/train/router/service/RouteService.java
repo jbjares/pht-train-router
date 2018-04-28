@@ -75,7 +75,7 @@ public class RouteService {
         return Optional.of(new APIRoute(new HashSet<>(nodes.values()), edges));
     }
 
-    
+
     List<TrainDestination> getPendingTrainDestinations() {
 
         return this.trainDestinationRepository.findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse();
