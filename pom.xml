@@ -80,13 +80,15 @@
       						<id>default</id>
       							<goals>
        							 	<goal>build</goal>
-        						  <!--	<goal>push</goal>   Local registry only -->
+        						        <goal>push</goal>
       							</goals>
     					</execution>
   				</executions>
 				<configuration>
+					<tag>latest</tag>
+					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
 					<pullNewerImage>false</pullNewerImage>
-					<repository>${docker.image.prefix}/${project.artifactId}</repository>
+					<repository>registry.gitlab.com/difuture/ekut-ukt/sandbox/pht/docker-registry/${project.artifactId}</repository>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
