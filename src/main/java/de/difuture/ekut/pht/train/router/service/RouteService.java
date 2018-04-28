@@ -41,6 +41,7 @@ public class RouteService {
     public Optional<APIRoute> getRoute(Long routeID) {
 
         final List<TrainDestination> route = this.routeEntityRepository.getTrainDestinations(routeID);
+        System.out.println("NODES to be retrieved " + route.size());
 
         // Keep track of the number of stationIDs encountered.
         final Map<Long, Integer> stationIDs = new HashMap<>();
@@ -62,7 +63,6 @@ public class RouteService {
                 return new APIRoute.Node(nodes.size() + 1L, stationID, m);
             });
 
-        System.out.println("NODES to be retrieved " + nodes.size());
 
         return Optional.of(new APIRoute(null, null));
     }
