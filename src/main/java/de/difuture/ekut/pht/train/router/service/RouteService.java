@@ -41,7 +41,11 @@ public class RouteService {
     public Optional<APIRoute> getRoute(Long routeID) {
 
         final Iterable<TrainDestination> route = this.trainDestinationRepository.findAllById(
-                this.routeEntityRepository.getTrainDestinationIDs(routeID), 2);
+                this.routeEntityRepository
+                        .getTrainDestinationIDs(routeID)
+                        .stream()
+                        .map(TrainDestination::getTrainDestinationID)
+                        .collect(Collectors.toSet()), 2);
 
         // Keep track of the number of stationIDs encountered.
         final Map<Long, Integer> stationIDs = new HashMap<>();
