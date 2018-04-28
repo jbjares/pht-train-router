@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+import java.util.Set;
+
 
 @CrossOrigin
 @RestController
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class TrainController {
 
     private static final ResponseEntity<?> BAD_REQUEST = ResponseEntity.badRequest().build();
+    private static final ResponseEntity<?> NOT_FOUND = ResponseEntity.notFound().build();
 
     private final RouteService routeService;
 
@@ -81,29 +85,20 @@ public class TrainController {
     }
 
     /**
-     * Adds a new route to the train with the provided trainID
+     * Gets a list of all train routes, as ids. for a particular train
      */
-    /*
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public Iterable<TrainRoutes> getAllTrainRoutes() {
+    @RequestMapping(value = "/{trainID}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getRoutes(@PathVariable Long trainID) {
 
-        final Map<UUID, Set<Long>> trainRoutes = new HashMap<>();
-        this.trainDestinationRepository.findAll().forEach(trainDestination ->
+        final Optional<Set<Long>> results =  this.routeService
+                .getTrainRouteIDs(trainID);
+        if ( ! results.isPresent()) {
 
-            trainRoutes.compute(UUID.fromString(trainDestination.getTrainID()),
-                    (trainID, previousRoutes) -> {
-
-                        final Set<Long> result
-                                = previousRoutes == null ? new HashSet<>() : previousRoutes;
-                        result.add(trainDestination.getRouteID());
-                        return result;
-                    })
-        );
-        return trainRoutes.entrySet().stream().map((entry) ->
-            new TrainRoutes(entry.getKey(), entry.getValue())
-        ).collect(Collectors.toList());
+            return NOT_FOUND;
+        }
+        return ResponseEntity.ok(results.get());
     }
-    */
+
     /**
      * Fetches particular route
      *

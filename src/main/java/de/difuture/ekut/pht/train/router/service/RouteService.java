@@ -12,10 +12,7 @@ import de.difuture.ekut.pht.train.router.repository.TrainRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,10 +37,23 @@ public class RouteService {
         this.stationRepository = stationRepository;
     }
 
-    public List<TrainDestination> getPendingTrainDestinations() {
+    List<TrainDestination> getPendingTrainDestinations() {
 
         return this.trainDestinationRepository.findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse();
     }
+
+    public Optional<Set<Long>> getTrainRouteIDs(Long trainID) {
+
+        return this.trainRepository
+                .findById(trainID)
+                .map(train ->
+                        train.getRoutes()
+                                .stream()
+                                .map(Route::getRouteID)
+                                .collect(Collectors.toSet())
+                );
+    }
+
 
     public void enableRoutes(Long trainID) {
 

@@ -1,5 +1,6 @@
 package de.difuture.ekut.pht.train.router.repository;
 import de.difuture.ekut.pht.lib.core.neo4j.entity.TrainDestination;
+import org.springframework.data.neo4j.annotation.Depth;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public interface TrainDestinationRepository extends Neo4jRepository<TrainDestina
      * This query is used for regularly publishing train visit messages
      *
      */
+    @Depth(2)
     List<TrainDestination> findAllByCanBeVisitedIsTrueAndHasBeenVisitedIsFalse();
 
     /**
