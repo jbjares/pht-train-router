@@ -58,17 +58,15 @@ public class RouteService {
             nodes.computeIfAbsent(trainDestination.getTrainDestinationID(), (tdID) -> {
 
                 final Station station =  trainDestination.getStation();
-                System.out.println("STATION: " + station);
                 final Long stationID = station.getStationID();
-                System.out.println("STATIONID: " + stationID);
-
                 final Integer m =  stationIDs.compute(stationID,
 
                         (sID, number) ->
 
                                 (number == null) ? 1 : number + 1
                 );
-                return new APIRoute.Node(nodes.size() + 1L, stationID, m);
+                // ID of the API route will be the same as the TrainDestination id
+                return new APIRoute.Node(tdID, stationID, m);
             });
 
         final Set<APIRoute.Edge> edges = new HashSet<>();

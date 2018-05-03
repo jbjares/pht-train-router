@@ -1,10 +1,16 @@
 package de.difuture.ekut.pht.train.router.controller;
 
 
+import de.difuture.ekut.pht.lib.core.neo4j.entity.Train;
+import de.difuture.ekut.pht.train.router.model.Node;
 import de.difuture.ekut.pht.train.router.repository.TrainDestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.StreamSupport;
 
 
 @CrossOrigin
@@ -21,39 +27,31 @@ public class TrainDestinationController {
         this.trainDestinationRepository = trainDestinationRepository;
     }
 
-    /*
+
     @RequestMapping(
             method = RequestMethod.GET,
             produces = "application/json")
-    public Iterable<NodeInfo> get(
+    public Map<Long, Node> get(
             @RequestParam(value = "trainDestinationID") Set<Long> ids) {
 
+        final Map<Long, Node> result = new HashMap<>();
 
-        // Get Stations if we require this information, filter for the
-        // stations that we actually care about
-        // TODO How can one direclty collect to a map?
-        final Map<UUID, String> stationNames = new HashMap<>();
-        this.stationOfficeClient
-                .getStations()
-                .forEach(station -> {
+        // Find the trainDestinations
+        StreamSupport.stream(this.trainDestinationRepository.findAllById(ids, 2).spliterator(), false )
+                .filter(trainDestination -> trainDestination.getTrain() != null)
+                .forEach(trainDestination -> {
 
-                    stationNames.put(station.getStationID(), station.getStationName());
-                });
-        final Iterable<TrainDestination> trainDestinations =
-                this.trainDestinationRepository.findAllById(ids);
+                    final Train train = trainDestination.getTrain();
+                    final Long trainDestinationID = trainDestination.getTrainDestinationID();
 
-        return StreamSupport.stream(trainDestinations.spliterator() , false)
-                .map((trainDestination -> {
-
-                    final UUID stationID = UUID.fromString(trainDestination.getStationID());
-                    return new NodeInfo(
-                            trainDestination.getTrainDestinationID(),
-                            stationID,
-                            stationNames.getOrDefault(stationID,"unknown"),
+                    final Node node = new Node(
+                            trainDestinationID,
                             trainDestination.isCanBeVisited(),
-                            trainDestination.isHasBeenVisited());
-
-                })).collect(Collectors.toList());
+                            trainDestination.isHasBeenVisited(),
+                            train.getTrainRegistryURI(),
+                            train.getTrainID());
+                    result.put(trainDestinationID, node);
+                });
+        return result;
     }
-    */
 }
