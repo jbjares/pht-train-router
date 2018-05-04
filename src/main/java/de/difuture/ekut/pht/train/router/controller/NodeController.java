@@ -38,7 +38,8 @@ public class NodeController {
 
         // Find the trainDestinations
         StreamSupport.stream(this.trainDestinationRepository.findAllById(ids, 2).spliterator(), false )
-                .filter(trainDestination -> trainDestination.getTrain() != null)
+                .filter(trainDestination -> trainDestination.getTrain()   != null &&
+                                            trainDestination.getStation() != null)
                 .forEach(trainDestination -> {
 
                     final Train train = trainDestination.getTrain();
@@ -49,7 +50,8 @@ public class NodeController {
                             trainDestination.isCanBeVisited(),
                             trainDestination.isHasBeenVisited(),
                             train.getTrainRegistryURI(),
-                            train.getTrainID());
+                            train.getTrainID(),
+                            trainDestination.getStation().getStationName());
                     result.put(trainDestinationID, node);
                 });
         return result;

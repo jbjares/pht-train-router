@@ -27,4 +27,7 @@ public final class Node {
 
     @JsonProperty("trainID")
     private Long trainID;
+
+    @JsonProperty("stationName")
+    private String stationName;
 }
