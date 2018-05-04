@@ -16,12 +16,12 @@ import java.util.stream.StreamSupport;
 @CrossOrigin
 @RestController
 @RequestMapping("/node")
-public class TrainDestinationController {
+public class NodeController {
 
     private final TrainDestinationRepository trainDestinationRepository;
 
     @Autowired
-    public TrainDestinationController(
+    public NodeController(
             final TrainDestinationRepository trainDestinationRepository) {
 
         this.trainDestinationRepository = trainDestinationRepository;
@@ -32,7 +32,7 @@ public class TrainDestinationController {
             method = RequestMethod.GET,
             produces = "application/json")
     public Map<Long, Node> get(
-            @RequestParam(value = "trainDestinationID") Set<Long> ids) {
+            @RequestParam(value = "id") Set<Long> ids) {
 
         final Map<Long, Node> result = new HashMap<>();
 
