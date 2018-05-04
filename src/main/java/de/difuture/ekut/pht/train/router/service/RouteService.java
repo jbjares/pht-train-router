@@ -37,6 +37,30 @@ public class RouteService {
         this.stationRepository = stationRepository;
     }
 
+    private void deleteTrainDestination(TrainDestination trainDestination) {
+
+        trainDestination.getChildren().forEach(this::deleteTrainDestination);
+        this.trainDestinationRepository.delete(trainDestination);
+    }
+
+
+    /**
+     * Deletes the route object and all contained train destinations
+     * from the graph
+     *
+     * @param routeID
+     */
+    public void deleteRoute(final Long routeID) {
+
+        this.routeEntityRepository
+                .findById(routeID)
+                .ifPresent(route -> {
+
+                    route.getStarts().forEach(this::deleteTrainDestination);
+                    this.routeEntityRepository.delete(route);
+                });
+    }
+
 
     public Optional<APIRoute> getRoute(Long routeID) {
 

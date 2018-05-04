@@ -15,6 +15,8 @@ import java.util.Optional;
 public class RouteController {
 
     private static final ResponseEntity<?> NOT_FOUND = ResponseEntity.notFound().build();
+    private static final ResponseEntity<?> OK = ResponseEntity.ok().build();
+
 
     private final RouteService routeService;
 
@@ -35,5 +37,13 @@ public class RouteController {
             return NOT_FOUND;
         }
         return ResponseEntity.ok(results.get());
+    }
+
+
+    @RequestMapping(value = "/{routeID}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteRoute(@PathVariable Long routeID) {
+
+        this.routeService.deleteRoute(routeID);
+        return OK;
     }
 }
